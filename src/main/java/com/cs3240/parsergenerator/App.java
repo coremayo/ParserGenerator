@@ -1,5 +1,7 @@
 package com.cs3240.parsergenerator;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /**
@@ -8,9 +10,9 @@ import java.util.Scanner;
  */
 public class App 
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws FileNotFoundException
     {
-    	Scanner scan = new Scanner(System.in);
+    	Scanner scan = new Scanner(new File(args[0]));
     	
     	StringBuffer output = new StringBuffer();
     	

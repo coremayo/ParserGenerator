@@ -26,6 +26,31 @@
 				  <target>1.6</target>
 			  </configuration>
 		  </plugin>
+      <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <version>2.2-beta-4</version>
+      <executions>
+      <execution>
+      <id>jar-with-dependencies</id>
+      <phase>package</phase>
+      <goals>
+      <goal>single</goal>
+      </goals>
+      <configuration>
+      <descriptorRefs>
+      <descriptorRef>jar-with-dependencies</descriptorRef>
+      </descriptorRefs>
+      <finalName>program</finalName>
+      <appendAssemblyId>false</appendAssemblyId>
+      <archive>
+      <manifest>
+      <mainClass>com.cs3240.parsergenerator.App</mainClass>
+      </manifest>
+      </archive>
+      </configuration>
+      </execution>
+      </executions>
+      </plugin>
 	  </plugins>
   </build>
 </project>

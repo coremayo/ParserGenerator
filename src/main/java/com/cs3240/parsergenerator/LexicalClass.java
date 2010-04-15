@@ -10,11 +10,11 @@ public enum LexicalClass {
 	ID("([a-zA-Z][a-zA-Z0-9_]{0,9}|_[a-zA-Z0-9][a-zA-Z0-9_]{0,8})", "ID"), 
 	INTNUM("[1-9][0-9]*", "INTNUM"), 
 	ASSIGN(":=", "ASSIGN"), 
-	LEFTPAR("(", "LEFTPAR"), 
-	RIGHTPAR(")", "RIGHTPAR"), 
-	PLUS("+", "PLUS"), 
+	LEFTPAR("\\(", "LEFTPAR"), 
+	RIGHTPAR("\\)", "RIGHTPAR"), 
+	PLUS("\\+", "PLUS"), 
 	MINUS("-", "MINUS"), 
-	MULTIPLY("*", "MULTIPLY"), 
+	MULTIPLY("\\*", "MULTIPLY"), 
 	MODULO("%", "MODULO");
 	
 	private String regex;
@@ -23,6 +23,7 @@ public enum LexicalClass {
 	
 	private LexicalClass(String regex, String name) {
 		this.regex = regex;
+		this.name = name;
 	}
 	
 	public static LexicalClass parseToken(String s) {

@@ -143,4 +143,12 @@ public class Grammar {
 		
 	}
 
+	/**
+	 * @return A list of all nonterminal symbols used in the grammar.
+	 */
+	public List<NonterminalSymbol> getNonTerminals() {
+		// TODO Implement me
+		return null;
+	}
+
 }

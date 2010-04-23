@@ -18,5 +18,9 @@ public abstract class Symbol {
 		return name;
 	}
 	
+	public boolean equals(Object obj) {
+		return name.equals(obj);
+	}
+	
 
 }

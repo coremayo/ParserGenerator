@@ -16,12 +16,12 @@ import java.util.Set;
  */
 public class Grammar {
 	private Map<String, Symbol> mapOfSymbols;
-	private Map<NonterminalSymbol, List<List<String>>> rulesMap;
+	private Map<NonterminalSymbol, List<Rule>> rulesMap;
 	private NonterminalSymbol startRule;
 	
 	public Grammar() {
 		this.mapOfSymbols = new HashMap<String, Symbol>();
-		this.rulesMap = new HashMap<NonterminalSymbol, List<List<String>>>();
+		this.rulesMap = new HashMap<NonterminalSymbol, List<Rule>>();
 	}
 	
 	/**
@@ -48,11 +48,11 @@ public class Grammar {
 	 * @param rule The rule for this nonterminal
 	 */
 	public void addRule(NonterminalSymbol symbol, List<String> rule) {
-		List<List<String>> rules = rulesMap.get(symbol);
+		List<Rule> rules = rulesMap.get(symbol);
 		if (rules == null) {
-			rules = new ArrayList<List<String>>();
+			rules = new ArrayList<Rule>();
 		}
-		rules.add(rule);
+		rules.add(new Rule(rule));
 		rulesMap.put(symbol, rules);
 	}
 	
@@ -62,11 +62,11 @@ public class Grammar {
 	 * @return a List of Symbols representing the rule for this nonterminal.
 	 */
 	public List<List<Symbol>> getRule(NonterminalSymbol symbol) {
-		List<List<String>> rules = rulesMap.get(symbol);
+		List<Rule> rules = rulesMap.get(symbol);
 		List<List<Symbol>> modifiedRules = new ArrayList<List<Symbol>>();
-		for (List<String> rawRule : rules) {
+		for (Rule rawRule : rules) {
 			List<Symbol> modifiedRule = new ArrayList<Symbol>();
-			for (String s : rawRule) {
+			for (String s : rawRule.getRule()) {
 				Symbol nextSymbol = mapOfSymbols.get(s);
 				modifiedRule.add(nextSymbol);
 			}
@@ -108,16 +108,39 @@ public class Grammar {
 		Set<NonterminalSymbol> keySetRules = rulesMap.keySet();
 		build.append("RULES: \n");
 		for (NonterminalSymbol sym : keySetRules) {
-			List<List<String>> rules = rulesMap.get(sym);
-			for (List<String> rule : rules) {
+			List<Rule> rules = rulesMap.get(sym);
+			for (Rule rule : rules) {
 				build.append(sym.getName() + " : ");
-				for (String s : rule) {
+				for (String s : rule.getRule()) {
 					build.append(s + " ");
 				}
 				build.append("\n");
 			}
 		}
 		return build.toString();
+	}
+	
+	public void removeLeftRecursion() {
+		Set<String> symKeySet = mapOfSymbols.keySet();
+		for (String s : symKeySet) {
+			Symbol sym = mapOfSymbols.get(s);
+			if (sym instanceof NonterminalSymbol) {
+				NonterminalSymbol nonTerm = (NonterminalSymbol) sym;
+				leftFactor(nonTerm);
+				removeSelfRecursion(nonTerm);
+			}
+		}
+	}
+
+	private void removeSelfRecursion(NonterminalSymbol nonTerm) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void leftFactor(NonterminalSymbol nonTerm) {
+		List<Rule> rules = rulesMap.get(nonTerm);
+		
+		
 	}
 
 }

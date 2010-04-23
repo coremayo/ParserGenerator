@@ -1,10 +1,11 @@
 package com.cs3240.parsergenerator;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
+
+import com.cs3240.parsergenerator.Domain.Grammar;
 
 /**
  * Hello world!
@@ -31,5 +32,8 @@ public class App
     	}
     	
     	System.out.println(output.toString());
+    	
+    	Grammar myGrammar = GrammarFileParser.parse(args[1]);
+    	System.out.println(myGrammar.toString());
     }
 }

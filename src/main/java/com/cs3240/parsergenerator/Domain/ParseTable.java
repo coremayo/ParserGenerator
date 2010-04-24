@@ -7,7 +7,7 @@ import java.util.Map;
 public class ParseTable {
 
 	/** Maps the parse table's DFA state to its entry containing inputs and goto's. */
-	private Map<Integer, ParseTableEntry> table;
+	private List<ParseTableEntry> table;
 	
 	public ParseTable(Grammar grammar) {
 		first(grammar);

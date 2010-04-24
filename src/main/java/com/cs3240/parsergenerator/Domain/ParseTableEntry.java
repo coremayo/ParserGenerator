@@ -1,11 +1,40 @@
 package com.cs3240.parsergenerator.Domain;
 
-import java.util.Map;
+import java.util.List;
 
 public class ParseTableEntry {
+	private NonterminalSymbol nonTerminal;
+	public NonterminalSymbol getNonTerminal() {
+		return nonTerminal;
+	}
 
-	private Map<NonterminalSymbol, ParseAction> inputs;
+	public void setNonTerminal(NonterminalSymbol nonTerminal) {
+		this.nonTerminal = nonTerminal;
+	}
+
+	public TerminalSymbol getTerminal() {
+		return terminal;
+	}
+
+	public void setTerminal(TerminalSymbol terminal) {
+		this.terminal = terminal;
+	}
+
+	public ParseAction getAction() {
+		return action;
+	}
+
+	public void setAction(ParseAction action) {
+		this.action = action;
+	}
+
+	private TerminalSymbol terminal;
+	private ParseAction action;
 	
-	private Map<TerminalSymbol, Integer> gotos;
+	public ParseTableEntry(NonterminalSymbol non, TerminalSymbol term, ParseAction act) {
+		this.nonTerminal = non;
+		this.terminal = term;
+		this.action = act;
+	}
 	
 }

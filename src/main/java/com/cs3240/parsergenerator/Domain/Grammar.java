@@ -146,7 +146,7 @@ public class Grammar {
 				List<Rule> rulesToRemove = new ArrayList<Rule>();
 				List<Rule> rulesToAdd = new ArrayList<Rule>();
 				for (Rule rule : rulesForAi) {
-					if (rule.get(0).equals(aj.getName())) {
+					if (rule.get(0).equals(aj)) {
 						rulesToRemove.add(rule);
 						for (Rule ruleJ : rulesForAj) {
 							Rule ruleClone = new Rule(new ArrayList<Symbol>(rule.getRule()));
@@ -163,6 +163,70 @@ public class Grammar {
 			}
 			immediateLeftRecursion(ai);
 		}
+		//Now to do the left factoring, god I hope this works
+		List<NonterminalSymbol> symbolsToAddFromFactoring = new ArrayList<NonterminalSymbol>();
+		for (NonterminalSymbol nonTermSymbol : listOfNonterminalSymbols) {
+			List<Rule> rulesForNonTerm = rulesMap.get(nonTermSymbol);
+			Map<Symbol, Integer> alphaCounts = new HashMap<Symbol, Integer>();
+			List<Rule> rulesToRemove = new ArrayList<Rule>();
+			List<Rule> rulesToAdd = new ArrayList<Rule>();
+			Map<NonterminalSymbol, List<Rule>> newRulesForNewSymbols = new HashMap<NonterminalSymbol, List<Rule>>();
+			for (Rule rule : rulesForNonTerm) {
+				Symbol first = rule.get(0);
+				if (alphaCounts.get(first) == null) {
+					alphaCounts.put(first, 1);
+					continue;
+				}
+				alphaCounts.put(first, alphaCounts.get(first) + 1);
+			}
+			Symbol maxAlpha = null;
+			int maxCount = 0;
+			for (Symbol s : alphaCounts.keySet()) {
+				if (alphaCounts.get(s) > maxCount) {
+					maxAlpha = s;
+					maxCount = alphaCounts.get(s);
+				}
+			}
+			if (maxCount < 2) {
+				return;
+			}
+			for (Rule rule : rulesForNonTerm) {
+				if (rule.get(0).equals(maxAlpha)) {
+					rulesToRemove.add(rule);
+					List<Symbol> newRule = new ArrayList<Symbol>();
+					NonterminalSymbol newSymbol = new NonterminalSymbol(maxAlpha.getName() + "FACTOR");
+					newRule.add(rule.get(0));
+					newRule.add(newSymbol);
+					if (!rulesToAdd.contains(newRule)) {
+						rulesToAdd.add(new Rule(newRule));
+					}
+					Rule ruleClone = new Rule(new ArrayList<Symbol>(rule.getRule()));
+					ruleClone.remove(0);
+					List<Rule> rulesForNewSymbol = newRulesForNewSymbols.get(newSymbol);
+					if (rulesForNewSymbol == null) {
+						rulesForNewSymbol = new ArrayList<Rule>();
+					}
+					if (ruleClone.getRule().size() > 0) {
+						rulesForNewSymbol.add(ruleClone);
+					} else {
+						rulesForNewSymbol.add(new Rule(Symbol.EPSILON));
+					}
+					newRulesForNewSymbols.put(newSymbol, rulesForNewSymbol);
+					
+				}
+				
+			}
+			List<Rule> newRulesForNonterm = new ArrayList<Rule>(rulesForNonTerm);
+			newRulesForNonterm.removeAll(rulesToRemove);
+			newRulesForNonterm.addAll(rulesToAdd);
+			rulesMap.put(nonTermSymbol, newRulesForNonterm);
+			for (NonterminalSymbol newSym : newRulesForNewSymbols.keySet()) {
+				symbolsToAddFromFactoring.add(newSym);
+				List<Rule> newRules = newRulesForNewSymbols.get(newSym);
+				rulesMap.put(newSym, newRules);
+			}
+		}
+		listOfNonterminalSymbols.addAll(symbolsToAddFromFactoring);
 		
 	}
 
@@ -186,7 +250,7 @@ public class Grammar {
 		 */
 		for (Rule rule : rulesForAi){
 			Rule ruleClone = new Rule(new ArrayList<Symbol>(rule.getRule()));
-			if (ruleClone.get(0).equals(ai.getName())) {
+			if (ruleClone.get(0).equals(ai)) {
 				rulesToRemove.add(rule);
 				ruleClone.remove(0);
 				ruleClone.add(newSymbol);

@@ -80,7 +80,7 @@ public class Grammar {
 	public String toString() {
 		//First, the symbols
 		StringBuilder build = new StringBuilder();
-		build.append("SYMBOLS: ");
+		build.append("SYMBOLS (" + listOfSymbols.size() + "): ");
 		for (Symbol s : listOfSymbols) {
 			build.append(s.getName() + " ");
 		}
@@ -110,11 +110,8 @@ public class Grammar {
 			}
 		}
 		for (int i = 0; i < nonTermList.size(); i++) {
-			for (int j = 0; j < i - 1; j++) {
-				NonterminalSymbol ai = nonTermList.get(i);
-				if (i == j) {
-					immediateLeftRecursion(ai);
-				}
+			NonterminalSymbol ai = nonTermList.get(i);
+			for (int j = 0; j < i; j++) {
 				NonterminalSymbol aj = nonTermList.get(j);
 				List<Rule> rulesForAi = rulesMap.get(ai);
 				List<Rule> rulesForAj = rulesMap.get(aj);
@@ -135,13 +132,14 @@ public class Grammar {
 				newRulesForAi.removeAll(rulesToRemove);
 				newRulesForAi.addAll(rulesToAdd);
 				rulesMap.put(ai, newRulesForAi);
-				
 			}
+			immediateLeftRecursion(ai);
 		}
 		
 	}
 
 	private void immediateLeftRecursion(NonterminalSymbol ai) {
+		boolean isNeeded = false;
 		List<Rule> rulesForAi = rulesMap.get(ai);
 		List<Rule> rulesToAdd = new ArrayList<Rule>();
 		List<Rule> rulesToRemove = new ArrayList<Rule>();
@@ -153,21 +151,26 @@ public class Grammar {
 				rulesToRemove.add(rule);
 				ruleClone.remove(0);
 				ruleClone.add(newSymbol);
-				rulesForNewSymbol.add(ruleClone);
+				rulesForNewSymbol.add(ruleClone);	
+				isNeeded = true;
 				continue;
 			}
-			ruleClone.add(newSymbol);
 		}
-		List<Symbol> episilonRule = new ArrayList<Symbol>();
-		episilonRule.add(new TerminalSymbol("."));
-		Rule epsilon = new Rule(episilonRule);
-		rulesForNewSymbol.add(epsilon);
-		List<Rule> newRulesForAi = new ArrayList<Rule>(rulesForAi);
-		newRulesForAi.removeAll(rulesToRemove);
-		newRulesForAi.addAll(rulesToAdd);
-		rulesMap.put(ai, newRulesForAi);
-		listOfSymbols.add(newSymbol);
-		rulesMap.put(newSymbol, rulesForNewSymbol);
+		if (isNeeded) {
+			List<Symbol> episilonRule = new ArrayList<Symbol>();
+			episilonRule.add(new TerminalSymbol("."));
+			Rule epsilon = new Rule(episilonRule);
+			rulesForNewSymbol.add(epsilon);
+			List<Rule> newRulesForAi = new ArrayList<Rule>(rulesForAi);
+			newRulesForAi.removeAll(rulesToRemove);
+			newRulesForAi.addAll(rulesToAdd);
+			for (Rule rule : newRulesForAi) {
+				rule.add(newSymbol);
+			}
+			rulesMap.put(ai, newRulesForAi);
+			listOfSymbols.add(newSymbol);
+			rulesMap.put(newSymbol, rulesForNewSymbol);
+		}
 	}
 
 	/**

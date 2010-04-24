@@ -22,11 +22,17 @@ public final class GrammarFileParser {
     		//Switching between Tokens, Non-terminals, Start, and Rules
     		if (lineSplit[0].trim().equals("%Tokens")) {
     			for (int i = 1; i < lineSplit.length; i++) {
+    				if (lineSplit[i].trim().isEmpty()) {
+    					continue;
+    				}
     				TerminalSymbol symbol = new TerminalSymbol(lineSplit[i].trim());
     				myGrammar.addSymbol(symbol);
     			}
     		} else if (lineSplit[0].trim().equals("%Non-terminals")) {
     			for (int i = 1; i < lineSplit.length; i++) {
+    				if (lineSplit[i].trim().isEmpty()) {
+    					continue;
+    				}
     				NonterminalSymbol symbol = new NonterminalSymbol(lineSplit[i].trim());
     				myGrammar.addSymbol(symbol);
     			}
@@ -40,6 +46,9 @@ public final class GrammarFileParser {
     					(NonterminalSymbol) myGrammar.getSymbol(lineSplit[0].trim());
     				List<Symbol> rule = new ArrayList<Symbol>();
     				for (int i = 2; i < lineSplit.length; i++) {
+    					if (lineSplit[i].trim().isEmpty()) {
+        					continue;
+        				}
     					if (lineSplit[i].trim().equals("|")) {
     						myGrammar.addRule(symbol, rule);
     						rule = new ArrayList<Symbol>();

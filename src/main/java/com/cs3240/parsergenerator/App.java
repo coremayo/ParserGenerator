@@ -34,6 +34,7 @@ public class App
     	System.out.println(output.toString());
     	
     	Grammar myGrammar = GrammarFileParser.parse(args[1]);
+    	myGrammar.removeLeftRecursion();
     	System.out.println(myGrammar.toString());
     }
 }

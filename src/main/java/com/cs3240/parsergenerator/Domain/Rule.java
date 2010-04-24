@@ -41,5 +41,10 @@ public class Rule {
 	public void add(final Symbol s) {
 		theRule.add(s);
 	}
+	
+	@Override
+	public String toString() {
+		return theRule.toString();
+	}
 
 }

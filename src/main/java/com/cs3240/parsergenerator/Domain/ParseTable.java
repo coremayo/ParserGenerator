@@ -11,15 +11,34 @@ public class ParseTable {
 
 	/** Maps the parse table's DFA state to its entry containing inputs and goto's. */
 	private List<ParseTableEntry> table;
+	private NonterminalSymbol startSymbol;
+	private List<NonterminalSymbol> nonTerminalSymbols;
+	private List<TerminalSymbol> terminalSymbols;
 	
+	public List<NonterminalSymbol> getNonTerminalSymbols() {
+		return nonTerminalSymbols;
+	}
+
+	public List<TerminalSymbol> getTerminalSymbols() {
+		return terminalSymbols;
+	}
+
 	public ParseTable(Grammar grammar) {
 		first(grammar);
 		follow(grammar);
 		generateTable(grammar);
+		this.startSymbol = grammar.getStartRule();
+		this.nonTerminalSymbols = grammar.getNonTerminals();
+		this.terminalSymbols = grammar.getListOfTerminalSymbols();
+		
 	}
 
-	protected ParseTable() {
+	public ParseTable() {
+		this.startSymbol = null;
+		this.nonTerminalSymbols = null;
+		this.terminalSymbols = null;
 	}
+
 
 	protected static void first(Grammar grammar) {
 		
@@ -172,5 +191,31 @@ public class ParseTable {
 				}
 			}
 		}
+
+	public Symbol getStartState() {
+		return this.startSymbol;
+	}
+
+	public ParseTableEntry getTableEntry(NonterminalSymbol peek, TerminalSymbol peek2) {
+		for (ParseTableEntry entry : table) {
+			if (entry.getNonTerminal().equals(peek)
+					&& entry.getTerminal().equals(peek2)) {
+				return entry;
+			}
+		}
+		return null;
+	}
+	
+	public List<ParseTableEntry> getAllEntries() {
+		return table;
+	}
+
+	public void setTerminalSymbols(List<TerminalSymbol> symbols) {
+		this.terminalSymbols = symbols;
+		
+	}
+
+	public void setNonterminalSymbols(List<NonterminalSymbol> symbols) {
+		this.nonTerminalSymbols = symbols;
 	}
 }

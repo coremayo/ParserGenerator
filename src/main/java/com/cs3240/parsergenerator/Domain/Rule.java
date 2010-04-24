@@ -2,6 +2,7 @@ package com.cs3240.parsergenerator.Domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class Rule {
 	
@@ -62,7 +63,15 @@ public class Rule {
 	
 	@Override
 	public String toString() {
-		return theRule.toString();
+		StringBuilder builder = new StringBuilder();
+		ListIterator<Symbol> it = theRule.listIterator();
+		while (it.hasNext()) {
+			builder.append(it.next());
+			if (it.hasNext()) {
+				builder.append(" ");
+			}
+		}
+		return builder.toString();
 	}
 	
 	@Override

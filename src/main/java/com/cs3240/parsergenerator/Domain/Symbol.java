@@ -9,10 +9,13 @@ import java.util.List;
  * both inherit this class.  Also, they both have names, might as well add that method
  * here.
  */
-public abstract class Symbol {
+public abstract class Symbol implements Comparable<Symbol> {
 	
 	/** Represents epsilon, or the empty symbol. */
 	public static final Symbol EPSILON = new TerminalSymbol(".");
+	
+	/** $, the special bottom of the stack terminal symbol. */
+	public static final TerminalSymbol $ = new TerminalSymbol("$");
 	
 	private String name;
 
@@ -45,5 +48,10 @@ public abstract class Symbol {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public int compareTo(Symbol s) {
+		return name.compareTo(s.name);
 	}
 }

@@ -4,8 +4,14 @@
 package com.cs3240.parsergenerator.Domain;
 
 
-import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
+
+import com.cs3240.parsergenerator.utils.Helper;
 
 /**
  * @author corey
@@ -13,42 +19,129 @@ import org.junit.Test;
  */
 public class ParseTableTest {
 	
+	private Grammar grammar;
+	NonterminalSymbol statement = new NonterminalSymbol("statement");
+	NonterminalSymbol ifstmt = new NonterminalSymbol("if-stmt");
+	NonterminalSymbol elsepart = new NonterminalSymbol("else-part");
+	NonterminalSymbol exp = new NonterminalSymbol("exp");
+	TerminalSymbol other = new TerminalSymbol("other");
+	TerminalSymbol ifSym = new TerminalSymbol("if");
+	TerminalSymbol elseSym = new TerminalSymbol("elseSym");
+	TerminalSymbol openParen = new TerminalSymbol("(");
+	TerminalSymbol closeParen = new TerminalSymbol(")");
+	TerminalSymbol zero = new TerminalSymbol("0");
+	TerminalSymbol one = new TerminalSymbol("1");
+
+	public ParseTableTest() {
+		
+		// Test grammar for unit tests:
+		// statement -> if-stmt | *other*
+		// if-stmt -> *if* *(* exp *)* statement else-part
+		// else-part -> *else* statement | empty
+		// exp -> *0* | *1*
+		this.grammar = new Grammar();
+		grammar.addSymbol(statement);
+		grammar.addSymbol(ifstmt);
+		grammar.addSymbol(elsepart);
+		grammar.addSymbol(exp);
+		grammar.addSymbol(other);
+		grammar.addSymbol(ifSym);
+		grammar.addSymbol(elseSym);
+		grammar.addSymbol(openParen);
+		grammar.addSymbol(closeParen);
+		grammar.addSymbol(zero);
+		grammar.addSymbol(one);
+		grammar.addSymbol(Symbol.EPSILON);
+		
+		grammar.setStartRule(statement);
+		grammar.addRule(statement, new Rule(ifstmt));
+		grammar.addRule(statement, new Rule(other));
+		grammar.addRule(ifstmt, new Rule(ifSym, openParen, exp, closeParen, statement, elsepart));
+		grammar.addRule(elsepart, new Rule(elseSym, statement));
+		grammar.addRule(elsepart, new Rule(Symbol.EPSILON));
+		grammar.addRule(exp, new Rule(zero));
+		grammar.addRule(exp, new Rule(one));
+		
+		// just calling constructor so that it will then call first() and follow() methods
+		new ParseTable(grammar);
+	}
+	
 	@Test
 	public void testFirst() {
 		
-		Grammar g = new Grammar();
-		NonterminalSymbol statement = new NonterminalSymbol("statement");
-		g.addSymbol(statement);
-		NonterminalSymbol ifstmt = new NonterminalSymbol("if-stmt");
-		g.addSymbol(ifstmt);
-		NonterminalSymbol elsepart = new NonterminalSymbol("else-part");
-		g.addSymbol(elsepart);
-		NonterminalSymbol exp = new NonterminalSymbol("exp");
-		g.addSymbol(exp);
-		Symbol other = new TerminalSymbol("other");
-		g.addSymbol(other);
-		Symbol ifSym = new TerminalSymbol("if");
-		g.addSymbol(ifSym);
-		Symbol openParen = new TerminalSymbol("(");
-		g.addSymbol(openParen);
-		Symbol closeParen = new TerminalSymbol(")");
-		g.addSymbol(closeParen);
-		Symbol zero = new TerminalSymbol("0");
-		g.addSymbol(zero);
-		Symbol one = new TerminalSymbol("1");
-		g.addSymbol(one);
-		Symbol empty = new TerminalSymbol("e");
-		g.addSymbol(empty);
+		String message;
+		List<TerminalSymbol> expected;
+		List<TerminalSymbol> actual;
 		
-		g.setStartRule(statement);
+		// First(if-stmt) = {if}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(ifSym);
+		actual = ifstmt.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 		
+		// First(statement) = {if, other}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(ifSym);
+		expected.add(other);
+		actual = statement.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 		
+		// First(else-part) = {else, empty}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(elseSym);
+		expected.add(Symbol.EPSILON);
+		actual = elsepart.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 		
+		// First(exp) = {0, 1}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(zero);
+		expected.add(one);
+		actual = exp.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 		
 	}
 	
 	@Test
 	public void testFollow() {
-//		Assert.fail("Implement ME!!!");
+		
+		String message;
+		List<TerminalSymbol> expected;
+		List<TerminalSymbol> actual;
+
+		// Follow(statement) = {$, else}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(Symbol.$);
+		expected.add(elseSym);
+		actual = statement.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(if-stmt) = {$, else}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(Symbol.$);
+		expected.add(elseSym);
+		actual = statement.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(else-part) = {$, else}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(Symbol.$);
+		expected.add(elseSym);
+		actual = statement.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(exp) = {)}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(closeParen);
+		actual = statement.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 	}
 }

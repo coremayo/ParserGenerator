@@ -1,7 +1,7 @@
 package com.cs3240.parsergenerator.Domain;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -15,9 +15,13 @@ public class ParseTable {
 	public ParseTable(Grammar grammar) {
 		first(grammar);
 		follow(grammar);
+		generateTable(grammar);
 	}
 
-	private void first(Grammar grammar) {
+	protected ParseTable() {
+	}
+
+	protected static void first(Grammar grammar) {
 		
 		// initialize the first set for each non-terminal to an empty list
 		for (NonterminalSymbol symbol : grammar.getNonTerminals()) {
@@ -78,7 +82,7 @@ public class ParseTable {
 	 * used in computation of follow sets.
 	 * @param grammar Grammar to compute follow sets for 
 	 */
-	private void follow(Grammar grammar) {
+	protected static void follow(Grammar grammar) {
 		
 		// Initialize the follow sets for all nonterminals to an empty set
 		for (NonterminalSymbol symbol : grammar.getNonTerminals()) {
@@ -107,23 +111,16 @@ public class ParseTable {
 					// for each Xi that is a nonterminal 
 					if (Xi instanceof NonterminalSymbol) {
 						
-						Set<TerminalSymbol> firstXn = new TreeSet<TerminalSymbol>();
+						Set<TerminalSymbol> firstXn = null;
 						
 						if (i == rule.size() - 1) {
 							// if i=n then Xi+1...Xn = epsilon
+							firstXn = new TreeSet<TerminalSymbol>();
 							firstXn.add(Symbol.EPSILON);
 							
 						} else {
 							// calculate first(Xi+1...Xn)
-							int k = i + 1;
-							while (k < rule.size() && firstXn.isEmpty()) {
-								Symbol Xk = rule.get(k);
-								Helper.addAllExceptFor(Xk.getFirst(), firstXn, Symbol.EPSILON);
-								k++;
-							}
-							if (firstXn.isEmpty()) {
-								firstXn.add(Symbol.EPSILON);
-							}
+							firstXn = calculateFirst(rule.subList(i + 1, rule.size()));
 						}
 						
 						// add [first(Xi+1 Xi+2...Xn) - {epsilon}] to follow(Xi)
@@ -135,6 +132,43 @@ public class ParseTable {
 							changes |= ((NonterminalSymbol) Xi).getFollow().addAll(A.getFollow());
 						}
 					}
+				}
+			}
+		}
+	}
+	
+	private static Set<TerminalSymbol> calculateFirst(List<Symbol> alpha) {
+		int k = 0;
+		Set<TerminalSymbol> first = new TreeSet<TerminalSymbol>();
+		
+		while (k < alpha.size() && first.isEmpty()) {
+			Symbol Xk = alpha.get(k);
+			Helper.addAllExceptFor(Xk.getFirst(), first, Symbol.EPSILON);
+			k++;
+		}
+		if (first.isEmpty()) {
+			first.add(Symbol.EPSILON);
+		}
+		return first;
+	}
+
+	private void generateTable(Grammar grammar) {
+		this.table = new ArrayList<ParseTableEntry>();
+		
+		for (Rule rule : grammar.getAllRules()) {
+			
+			NonterminalSymbol A = rule.getLhs();
+			Set<TerminalSymbol> firstA = calculateFirst(rule.getRule());
+			
+			for (TerminalSymbol s : firstA) {
+				ParseAction action = new ParseAction(A, rule);
+				table.add(new ParseTableEntry(A, s, action));
+			}
+			
+			if (firstA.contains(Symbol.EPSILON)) {
+				for (TerminalSymbol s : A.getFollow()) {
+					ParseAction action = new ParseAction(A, rule);
+					table.add(new ParseTableEntry(A, s, action));
 				}
 			}
 		}

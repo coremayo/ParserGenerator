@@ -178,10 +178,10 @@ public class Grammar {
 		return null;
 	}
 
-	public NonterminalSymbol getSymbol(String name) {
+	public Symbol getSymbol(String name) {
 		for (Symbol s : listOfSymbols) {
 			if (s.getName().equals(name)) {
-				return (NonterminalSymbol) s;
+				return s;
 			}
 		}
 		return null;

@@ -31,8 +31,7 @@ public final class GrammarFileParser {
     				myGrammar.addSymbol(symbol);
     			}
     		} else if (lineSplit[0].trim().equals("%Start")) {
-    			myGrammar.setStartRule(
-    					(NonterminalSymbol) myGrammar.getSymbol(lineSplit[1].trim()));
+    			myGrammar.setStartRule((NonterminalSymbol) myGrammar.getSymbol(lineSplit[1].trim()));
     		} else if (lineSplit[0].trim().equals("%Rules")) {
     			isDefiningRules = true;
     		} else {

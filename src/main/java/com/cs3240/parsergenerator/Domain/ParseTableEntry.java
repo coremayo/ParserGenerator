@@ -3,7 +3,10 @@ package com.cs3240.parsergenerator.Domain;
 import java.util.List;
 
 public class ParseTableEntry {
+	private TerminalSymbol terminal;
+	private ParseAction action;
 	private NonterminalSymbol nonTerminal;
+	
 	public NonterminalSymbol getNonTerminal() {
 		return nonTerminal;
 	}
@@ -27,14 +30,15 @@ public class ParseTableEntry {
 	public void setAction(ParseAction action) {
 		this.action = action;
 	}
-
-	private TerminalSymbol terminal;
-	private ParseAction action;
 	
 	public ParseTableEntry(NonterminalSymbol non, TerminalSymbol term, ParseAction act) {
 		this.nonTerminal = non;
 		this.terminal = term;
 		this.action = act;
+	}
+
+	public ParseTableEntry() {
+		this(null,null,null);
 	}
 	
 }

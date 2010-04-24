@@ -288,6 +288,10 @@ public class Grammar {
 		}
 	}
 
+	public List<TerminalSymbol> getListOfTerminalSymbols() {
+		return listOfTerminalSymbols;
+	}
+
 	/**
 	 * @return A list of all nonterminal symbols used in the grammar.
 	 */

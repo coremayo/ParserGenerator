@@ -9,6 +9,10 @@ public class ParseAction {
 		this.rule = rule;
 	}
 
+	public ParseAction() {
+		this(null, null);
+	}
+
 	public NonterminalSymbol getLeftHandSide() {
 		return leftHandSide;
 	}

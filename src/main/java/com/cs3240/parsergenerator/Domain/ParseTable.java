@@ -191,6 +191,7 @@ public class ParseTable {
 				}
 			}
 		}
+	}
 
 	public Symbol getStartState() {
 		return this.startSymbol;

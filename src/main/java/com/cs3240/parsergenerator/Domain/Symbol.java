@@ -23,6 +23,11 @@ public abstract class Symbol {
 	public String getName() {
 		return name;
 	}
+
+	public List<TerminalSymbol> getFirst() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -38,6 +43,4 @@ public abstract class Symbol {
 	public String toString() {
 		return name;
 	}
-	
-
 }

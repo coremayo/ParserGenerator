@@ -186,5 +186,9 @@ public class Grammar {
 		}
 		return null;
 	}
+	public List<Rule> getRulesForNonterminal(NonterminalSymbol symbol) {
+		// TODO Implement me
+		return null;
+	}
 
 }

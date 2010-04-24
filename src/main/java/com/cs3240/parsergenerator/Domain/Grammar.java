@@ -269,7 +269,7 @@ public class Grammar {
 		 */
 		if (isNeeded) {
 			List<Symbol> episilonRule = new ArrayList<Symbol>();
-			episilonRule.add(new TerminalSymbol("."));
+			episilonRule.add(Symbol.EPSILON);
 			Rule epsilon = new Rule(episilonRule);
 			rulesForNewSymbol.add(epsilon);
 			List<Rule> newRulesForAi = new ArrayList<Rule>(rulesForAi);

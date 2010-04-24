@@ -2,7 +2,7 @@
 %Non-terminals <lexp> <atom> <lexp-seq> <list> 
 %Start <lexp> 
 %Rules
-<lexp> : <atom> | <atom> SEMICOLON | <list>
+<lexp> : <atom> | <list>
 <atom> : NUMBER | ID
-<list> : LEFTPAR <lexp-seq> RIGHTPAR
 <lexp-seq> : <lexp-seq> <lexp> | <lexp>
+<list> : LEFTPAR <lexp-seq> RIGHTPAR

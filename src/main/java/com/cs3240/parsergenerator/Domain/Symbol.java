@@ -12,7 +12,7 @@ import java.util.List;
 public abstract class Symbol {
 	
 	/** Represents epsilon, or the empty symbol. */
-	public static final Symbol EPSILON = new TerminalSymbol("epsilon");
+	public static final Symbol EPSILON = new TerminalSymbol(".");
 	
 	private String name;
 

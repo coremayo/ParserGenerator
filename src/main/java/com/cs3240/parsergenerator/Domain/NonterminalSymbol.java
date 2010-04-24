@@ -35,6 +35,7 @@ public class NonterminalSymbol extends Symbol {
 		this.nullable = nullable;
 	}
 
+	@Override
 	public List<TerminalSymbol> getFirst() {
 		return first;
 	}

@@ -1,5 +1,7 @@
 package com.cs3240.parsergenerator.Domain;
 
+import java.util.List;
+
 /**
  * @author Bobby
  * This will be the base for the terminal and non-terminal objects.  Since
@@ -8,6 +10,10 @@ package com.cs3240.parsergenerator.Domain;
  * here.
  */
 public abstract class Symbol {
+	
+	/** Represents epsilon, or the empty symbol. */
+	public static final Symbol EPSILON = new NonterminalSymbol("epsilon");
+	
 	private String name;
 
 	public void setName(String name) {
@@ -16,6 +22,11 @@ public abstract class Symbol {
 
 	public String getName() {
 		return name;
+	}
+
+	public List<TerminalSymbol> getFirst() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	@Override
@@ -32,6 +43,4 @@ public abstract class Symbol {
 	public String toString() {
 		return name;
 	}
-	
-
 }

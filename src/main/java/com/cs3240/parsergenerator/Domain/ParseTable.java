@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class ParseTable {
 
+	/** Maps the parse table's DFA state to its entry containing inputs and goto's. */
 	private Map<Integer, ParseTableEntry> table;
 	
 	public ParseTable(Grammar grammar) {
@@ -21,7 +22,7 @@ public class ParseTable {
 		}
 
 		// find the first set for every non-terminal symbol
-		for (NonterminalSymbol symbol : grammar.getNonTerminals()) {
+		for (NonterminalSymbol A : grammar.getNonTerminals()) {
 
 			boolean changes = true;
 			
@@ -29,23 +30,25 @@ public class ParseTable {
 			while (changes) {
 				changes = false;
 
-				List<Rule> productionChoices = grammar.getRulesForNonterminal(symbol);
+				List<Rule> productionChoices = grammar.getRulesForNonterminal(A);
 				
-				// iterate over each rule where A is on the left-hand side
+				// iterate over each rule where A is on the left-hand side and X_k on the right
 				for (Rule r : productionChoices) {
 
-					int k = 1;
+					int k = 0;
 					boolean cont = true;
 
-					while (cont && k <= productionChoices.size()) {
+					while (cont && k < productionChoices.size()) {
+						
+						Symbol XK = r.get(0);
 
 						List<TerminalSymbol> toAdd;
 
 						// firstXK = first(X_k)
-						List<TerminalSymbol> firstXK = null;
+						List<TerminalSymbol> firstXK = XK.getFirst();
 
 						// firstA = first(A)
-						List<TerminalSymbol> firstA = null;
+						List<TerminalSymbol> firstA = A.getFirst();
 
 						// add symbols that are in the first of the current non-terminal but not A
 						toAdd = new ArrayList<TerminalSymbol>(firstXK);

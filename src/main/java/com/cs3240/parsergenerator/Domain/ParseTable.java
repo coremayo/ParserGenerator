@@ -21,26 +21,28 @@ public class ParseTable {
 			symbol.setFirst(new ArrayList<TerminalSymbol>());
 		}
 
-		// find the first set for every non-terminal symbol
-		for (NonterminalSymbol A : grammar.getNonTerminals()) {
+		boolean changes = true;
 
-			boolean changes = true;
-			
-			// continue while there are changes to any First(A)
-			while (changes) {
-				changes = false;
+		// continue while there are changes to any First(A)
+		while (changes) {
+			changes = false;
 
-				List<Rule> productionChoices = grammar.getRulesForNonterminal(A);
-				
+			List<Rule> productionChoices = grammar.getAllRules();
+
+			if (productionChoices != null) {
+
 				// iterate over each rule where A is on the left-hand side and X_k on the right
-				for (Rule r : productionChoices) {
+				for (Rule rule : productionChoices) {
+
+					NonterminalSymbol A = rule.getLhs();
 
 					int k = 0;
 					boolean cont = true;
 
 					while (cont && k < productionChoices.size()) {
-						
-						Symbol XK = r.get(0);
+
+						// X_k is the first symbol in the rhs of the rule
+						Symbol XK = rule.get(0);
 
 						List<TerminalSymbol> toAdd;
 
@@ -50,12 +52,13 @@ public class ParseTable {
 						// firstA = first(A)
 						List<TerminalSymbol> firstA = A.getFirst();
 
-						// add symbols that are in the first of the current non-terminal but not A
+						// add symbols that are in the first set of the current rule but not A
 						toAdd = new ArrayList<TerminalSymbol>(firstXK);
 						toAdd.removeAll(firstA);
 
 						// if some rule is going to be added to A then set our changes flag
 						if (toAdd.size() > 0) {
+							firstA.addAll(toAdd);
 							changes = true;
 							cont = false;
 						}

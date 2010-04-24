@@ -28,6 +28,4 @@ public abstract class Symbol {
 		return name.equals(obj);
 	}
 
-	public abstract List<TerminalSymbol> getFirst();
-
 }

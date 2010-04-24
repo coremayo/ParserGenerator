@@ -1,6 +1,5 @@
 package com.cs3240.parsergenerator.Domain;
 
-import java.util.List;
 import java.util.Set;
 
 /**

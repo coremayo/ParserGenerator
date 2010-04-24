@@ -12,7 +12,7 @@ import java.util.List;
 public abstract class Symbol {
 	
 	/** Represents epsilon, or the empty symbol. */
-	public static final Symbol EPSILON = new NonterminalSymbol("epsilon");
+	public static final Symbol EPSILON = new TerminalSymbol("epsilon");
 	
 	private String name;
 
@@ -31,7 +31,10 @@ public abstract class Symbol {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return name.equals(obj);
+		if (obj instanceof Symbol) {
+			return name.equals(((Symbol) obj).name);
+		}
+		return false;
 	}
 	
 	@Override

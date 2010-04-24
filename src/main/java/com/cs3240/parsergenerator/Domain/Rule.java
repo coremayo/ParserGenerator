@@ -69,5 +69,10 @@ public class Rule {
 	public boolean equals(Object o) {
 		return o instanceof Rule ? theRule.equals(((Rule)o).theRule) : false;
 	}
+	
+	@Override
+	public int hashCode() {
+		return theRule.hashCode();
+	}
 
 }

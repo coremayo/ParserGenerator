@@ -194,7 +194,7 @@ public class Grammar {
 					NonterminalSymbol newSymbol = new NonterminalSymbol(maxAlpha.getName() + "FACTOR");
 					newRule.add(rule.get(0));
 					newRule.add(newSymbol);
-					if (!rulesToAdd.contains(newRule)) {
+					if (!rulesToAdd.contains(new Rule(newRule))) {
 						rulesToAdd.add(new Rule(newRule));
 					}
 					Rule ruleClone = new Rule(new ArrayList<Symbol>(rule.getRule()));

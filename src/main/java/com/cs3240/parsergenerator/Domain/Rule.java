@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rule {
+	
+	private NonterminalSymbol lhs;
+	
 	private List<Symbol> theRule;
 	
 	public Rule(List<Symbol> rule) {
@@ -29,6 +32,14 @@ public class Rule {
 		return theRule;
 	}
 	
+	public NonterminalSymbol getLhs() {
+		return lhs;
+	}
+
+	public void setLhs(NonterminalSymbol lhs) {
+		this.lhs = lhs;
+	}
+
 	public Symbol get(final int i) {
 		return theRule.get(i);
 	}
@@ -52,6 +63,11 @@ public class Rule {
 	@Override
 	public String toString() {
 		return theRule.toString();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof Rule ? theRule.equals(((Rule)o).theRule) : false;
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.cs3240.parsergenerator.Domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +11,6 @@ import java.util.Set;
  * The master class for the Grammar.  This will keep a Mapping of all the Symbols 
  * and their names.  This will also be able to get out all the rules for each 
  * non-terminal by keeping a mapping of nonterminal symbols to rules.
- * 
- * TODO Make it so that a nonterminal can have multiple rules.
  */
 public class Grammar {
 	private List<TerminalSymbol> listOfTerminalSymbols;
@@ -221,8 +218,7 @@ public class Grammar {
 	 * @return A list of all nonterminal symbols used in the grammar.
 	 */
 	public List<NonterminalSymbol> getNonTerminals() {
-		// TODO Implement me
-		return null;
+		return this.listOfNonterminalSymbols;
 	}
 
 	public Symbol getSymbol(String name) {
@@ -238,9 +234,18 @@ public class Grammar {
 		}
 		return null;
 	}
-	public List<Rule> getRulesForNonterminal(NonterminalSymbol symbol) {
-		// TODO Implement me
-		return null;
+
+	public List<Rule> getAllRules() {
+		List<Rule> ret = new ArrayList<Rule>();
+		
+		for (NonterminalSymbol sym : this.rulesMap.keySet()) {
+			List<Rule> rules = this.rulesMap.get(sym);
+			for (Rule rule : rules) {
+				rule.setLhs(sym);
+				ret.add(rule);
+			}
+		}
+		return ret;
 	}
 
 }

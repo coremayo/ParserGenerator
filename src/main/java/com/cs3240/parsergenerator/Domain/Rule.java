@@ -64,5 +64,10 @@ public class Rule {
 	public String toString() {
 		return theRule.toString();
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof Rule ? theRule.equals(((Rule)o).theRule) : false;
+	}
 
 }

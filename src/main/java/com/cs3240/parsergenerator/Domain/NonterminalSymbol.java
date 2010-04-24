@@ -1,6 +1,7 @@
 package com.cs3240.parsergenerator.Domain;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Bobby
@@ -11,9 +12,9 @@ public class NonterminalSymbol extends Symbol {
 	
 	private boolean nullable;
 	
-	private List<TerminalSymbol> first;
+	private Set<TerminalSymbol> first;
 	
-	private List<TerminalSymbol> follow;
+	private Set<TerminalSymbol> follow;
 	
 	public NonterminalSymbol(final String name) {
 		this.setName(name);
@@ -36,19 +37,19 @@ public class NonterminalSymbol extends Symbol {
 	}
 
 	@Override
-	public List<TerminalSymbol> getFirst() {
+	public Set<TerminalSymbol> getFirst() {
 		return first;
 	}
 
-	public void setFirst(List<TerminalSymbol> first) {
+	public void setFirst(Set<TerminalSymbol> first) {
 		this.first = first;
 	}
 
-	public List<TerminalSymbol> getFollow() {
+	public Set<TerminalSymbol> getFollow() {
 		return follow;
 	}
 
-	public void setFollow(List<TerminalSymbol> follow) {
+	public void setFollow(Set<TerminalSymbol> follow) {
 		this.follow = follow;
 	}
 

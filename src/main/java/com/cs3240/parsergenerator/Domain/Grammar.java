@@ -178,6 +178,14 @@ public class Grammar {
 		return null;
 	}
 
+	public Symbol getSymbol(String name) {
+		for (Symbol s : listOfSymbols) {
+			if (s.getName().equals(name)) {
+				return s;
+			}
+		}
+		return null;
+	}
 	public List<Rule> getRulesForNonterminal(NonterminalSymbol symbol) {
 		// TODO Implement me
 		return null;

@@ -10,6 +10,10 @@ public class Rule {
 		theRule = rule;
 	}
 	
+	public Rule() {
+		this(new ArrayList<Symbol>());
+	}
+	
 	public void setRule(List<Symbol> rule) {
 		this.theRule = rule;
 	}

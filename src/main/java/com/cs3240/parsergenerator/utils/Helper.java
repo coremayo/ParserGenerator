@@ -17,7 +17,7 @@ public class Helper {
 	 * @param right another list
 	 * @return whether the two lists have the same elements
 	 */
-	public static <T extends Comparable<? super T>> boolean equalsIgnoreOrder(List<? extends T> left, List<? extends T> right) {
+	public static <T extends Comparable<? super T>> boolean equalsIgnoreOrder(Collection<? extends T> left, Collection<? extends T> right) {
 		
 		List<T> leftCopy = new ArrayList<T>(left);
 		List<T> rightCopy = new ArrayList<T>(right);
@@ -37,16 +37,33 @@ public class Helper {
 	
 	/**
 	 * Adds all elements from the source list to the destination list except 
+	 * for the specified object.
+	 * 
+	 * @param <T> Type of objects used in the source and destination lists
+	 * @param src source list
+	 * @param dest destination list
+	 * @param exception object that should be excluded
+	 * @return whether the destination list was changed; i.e. whether anything 
+	 * was added to it.
+	 */
+	public static <T> boolean addAllExceptFor(Collection<T> src, Collection<T> dest, T exception) {
+		List<T> exceptions = new ArrayList<T>();
+		exceptions.add(exception);
+		return addAllExceptFor(src, dest, exceptions);
+	}
+	
+	/**
+	 * Adds all elements from the source list to the destination list except 
 	 * for the specified objects.
 	 * 
 	 * @param <T> Type of objects used in the source and destination lists
 	 * @param src source list
 	 * @param dest destination list
-	 * @param exception collection of objects that should be excluded
+	 * @param exceptions collection of objects that should be excluded
 	 * @return whether the destination list was changed; i.e. whether anything 
 	 * was added to it.
 	 */
-	public static <T> boolean addAllExceptFor(List<T> src, List<T> dest, Collection<T> exceptions) {
+	public static <T> boolean addAllExceptFor(Collection<T> src, Collection<T> dest, Collection<T> exceptions) {
 		List<T> srcCopy = new ArrayList<T>(src);
 		srcCopy.removeAll(exceptions);
 		return dest.addAll(srcCopy);

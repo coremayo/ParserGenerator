@@ -1,7 +1,7 @@
 package com.cs3240.parsergenerator.Domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Bobby
@@ -14,8 +14,8 @@ public class TerminalSymbol extends Symbol {
 	}
 
 	@Override
-	public List<TerminalSymbol> getFirst() {
-		List<TerminalSymbol> ret = new ArrayList<TerminalSymbol>();
+	public Set<TerminalSymbol> getFirst() {
+		Set<TerminalSymbol> ret = new TreeSet<TerminalSymbol>();
 		ret.add(this);
 		return ret;
 	}

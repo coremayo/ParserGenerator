@@ -1,6 +1,6 @@
 package com.cs3240.parsergenerator.Domain;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author Bobby
@@ -12,7 +12,7 @@ import java.util.List;
 public abstract class Symbol implements Comparable<Symbol> {
 	
 	/** Represents epsilon, or the empty symbol. */
-	public static final Symbol EPSILON = new TerminalSymbol(".");
+	public static final TerminalSymbol EPSILON = new TerminalSymbol(".");
 	
 	/** $, the special bottom of the stack terminal symbol. */
 	public static final TerminalSymbol $ = new TerminalSymbol("$");
@@ -27,7 +27,7 @@ public abstract class Symbol implements Comparable<Symbol> {
 		return name;
 	}
 
-	public List<TerminalSymbol> getFirst() {
+	public Set<TerminalSymbol> getFirst() {
 		// TODO Auto-generated method stub
 		return null;
 	}

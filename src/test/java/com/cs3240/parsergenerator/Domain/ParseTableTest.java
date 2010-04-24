@@ -7,7 +7,7 @@ package com.cs3240.parsergenerator.Domain;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -70,8 +70,8 @@ public class ParseTableTest {
 	public void testFirst() {
 		
 		String message;
-		List<TerminalSymbol> expected;
-		List<TerminalSymbol> actual;
+		Collection<TerminalSymbol> expected;
+		Collection<TerminalSymbol> actual;
 		
 		// First(if-stmt) = {if}
 		expected = new ArrayList<TerminalSymbol>();
@@ -110,8 +110,8 @@ public class ParseTableTest {
 	public void testFollow() {
 		
 		String message;
-		List<TerminalSymbol> expected;
-		List<TerminalSymbol> actual;
+		Collection<TerminalSymbol> expected;
+		Collection<TerminalSymbol> actual;
 
 		// Follow(statement) = {$, else}
 		expected = new ArrayList<TerminalSymbol>();
@@ -125,7 +125,7 @@ public class ParseTableTest {
 		expected = new ArrayList<TerminalSymbol>();
 		expected.add(Symbol.$);
 		expected.add(elseSym);
-		actual = statement.getFollow();
+		actual = ifstmt.getFollow();
 		message = "Expected: " + expected + " and got: " + actual;
 		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 		
@@ -133,14 +133,14 @@ public class ParseTableTest {
 		expected = new ArrayList<TerminalSymbol>();
 		expected.add(Symbol.$);
 		expected.add(elseSym);
-		actual = statement.getFollow();
+		actual = elsepart.getFollow();
 		message = "Expected: " + expected + " and got: " + actual;
 		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 		
 		// Follow(exp) = {)}
 		expected = new ArrayList<TerminalSymbol>();
 		expected.add(closeParen);
-		actual = statement.getFollow();
+		actual = exp.getFollow();
 		message = "Expected: " + expected + " and got: " + actual;
 		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 	}

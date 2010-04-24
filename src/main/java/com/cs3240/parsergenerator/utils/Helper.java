@@ -1,6 +1,7 @@
 package com.cs3240.parsergenerator.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,5 +33,22 @@ public class Helper {
 		
 		
 		return leftCopy.equals(rightCopy);
+	}
+	
+	/**
+	 * Adds all elements from the source list to the destination list except 
+	 * for the specified objects.
+	 * 
+	 * @param <T> Type of objects used in the source and destination lists
+	 * @param src source list
+	 * @param dest destination list
+	 * @param exception collection of objects that should be excluded
+	 * @return whether the destination list was changed; i.e. whether anything 
+	 * was added to it.
+	 */
+	public static <T> boolean addAllExceptFor(List<T> src, List<T> dest, Collection<T> exceptions) {
+		List<T> srcCopy = new ArrayList<T>(src);
+		srcCopy.removeAll(exceptions);
+		return dest.addAll(srcCopy);
 	}
 }

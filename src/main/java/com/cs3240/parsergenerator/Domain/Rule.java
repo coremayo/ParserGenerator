@@ -10,6 +10,13 @@ public class Rule {
 		theRule = rule;
 	}
 	
+	public Rule(Symbol...rule) {
+		this.theRule = new ArrayList<Symbol>(rule.length);
+		for (Symbol s : rule) {
+			theRule.add(s);
+		}
+	}
+	
 	public Rule() {
 		this(new ArrayList<Symbol>());
 	}

@@ -77,6 +77,9 @@ public class Grammar {
 		this.startRule = startRule;
 	}
 
+	/**
+	 * @return Gets the start symbol for the grammar, not the actual rule.
+	 */
 	public NonterminalSymbol getStartRule() {
 		return startRule;
 	}

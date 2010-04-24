@@ -38,6 +38,16 @@ public class Grammar {
 	 * @param symbol A Nonterminal, since they are only symbols with rules
 	 * @param rule The rule for this nonterminal
 	 */
+	public void addRule(NonterminalSymbol symbol, Rule rule) {
+		addRule(symbol, rule.getRule());
+	}
+	
+	/**
+	 * Adds a rule to the rules map.   
+	 * 
+	 * @param symbol A Nonterminal, since they are only symbols with rules
+	 * @param rule The rule for this nonterminal
+	 */
 	public void addRule(NonterminalSymbol symbol, List<Symbol> rule) {
 		List<Rule> rules = rulesMap.get(symbol);
 		if (rules == null) {

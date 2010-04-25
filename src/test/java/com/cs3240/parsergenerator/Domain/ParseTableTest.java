@@ -1,12 +1,20 @@
 package com.cs3240.parsergenerator.Domain;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.Test;
 
+import com.cs3240.parsergenerator.utils.Helper;
+import static com.cs3240.parsergenerator.Domain.Symbol.EPSILON;
+import static com.cs3240.parsergenerator.Domain.Symbol.$;
+
 public class ParseTableTest {
 
-	Grammar grammar;
+	Grammar grammar = new Grammar();
 	NonterminalSymbol exp = new NonterminalSymbol("<exp>");
 	NonterminalSymbol expPrime = new NonterminalSymbol("<exp'>");
 	NonterminalSymbol addop = new NonterminalSymbol("<addop>");
@@ -21,45 +29,120 @@ public class ParseTableTest {
 	TerminalSymbol rightPar = new TerminalSymbol(")");
 	TerminalSymbol number = new TerminalSymbol("number");
 	
-	private ParseTable parseTable;
-	
 	public ParseTableTest() {
+
+		grammar.addSymbol(exp);
+		grammar.addSymbol(expPrime);
+		grammar.addSymbol(addop);
+		grammar.addSymbol(term);
+		grammar.addSymbol(termPrime);
+		grammar.addSymbol(mulop);
+		grammar.addSymbol(factor);
+		grammar.addSymbol(plus);
+		grammar.addSymbol(minus);
+		grammar.addSymbol(multiply);
+		grammar.addSymbol(leftPar);
+		grammar.addSymbol(rightPar);
+		grammar.addSymbol(number);
+		
 		/*
-		 * TERMINAL SYMBOLS (5): NUMBER ID LEFTPAR RIGHTPAR SEMICOLON 
-		 * NONTERMINAL SYMBOLS (5): <lexp> <atom> <lexp-seq> <list> <lexp-seq>Prime 
-		 * RULES: 
-		 * <lexp-seq>Prime : <lexp> <lexp-seq>Prime 
-		 * <lexp-seq>Prime : . 
-		 * <lexp-seq> : <list> <lexp-seq>Prime 
-		 * <lexp-seq> : NUMBER <lexp-seq>Prime 
-		 * <lexp-seq> : ID <lexp-seq>Prime 
-		 * <list> : LEFTPAR <lexp-seq> RIGHTPAR 
-		 * <atom> : NUMBER 
-		 * <atom> : ID 
-		 * <lexp> : <atom> 
-		 * <lexp> : <list> 
+		 * <exp> => <term> <exp'>
+		 * <exp'> => <addop> <term> <exp'> | empty
+		 * <addop> => + | -
+		 * <term> => <factor> <term'>
+		 * <term'> => <mulop> <factor> <term'> | empty
+		 * <mulop> => *
+		 * <factor> => ( <exp> ) | number
 		 */
-		Grammar grammar = new Grammar();
 		grammar.setStartRule(exp);
 		grammar.addRule(exp, new Rule(term, expPrime));
 		grammar.addRule(expPrime, new Rule(addop, term, expPrime));
-		grammar.addRule(expPrime, new Rule(Symbol.EPSILON));
+		grammar.addRule(expPrime, new Rule(EPSILON));
 		grammar.addRule(addop, new Rule(plus));
 		grammar.addRule(addop, new Rule(minus));
 		grammar.addRule(term, new Rule(factor, termPrime));
 		grammar.addRule(termPrime, new Rule(mulop, factor, termPrime));
-		grammar.addRule(termPrime, new Rule(Symbol.EPSILON));
+		grammar.addRule(termPrime, new Rule(EPSILON));
 		grammar.addRule(mulop, new Rule(multiply));
 		grammar.addRule(factor, new Rule(leftPar, exp, rightPar));
 		grammar.addRule(factor, new Rule(number));
 		
-		this.parseTable = new ParseTable(grammar);
+	}
+	
+	@Test
+	public void testFirst() {
+		ParseTable.first(grammar);
+		
+		String message;
+		Collection<TerminalSymbol> expected;
+		Collection<TerminalSymbol> actual;
+		
+		// First(exp) = {(, number}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(leftPar);
+		expected.add(number);
+		actual = exp.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// First(exp') = {+, -, empty}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(plus);
+		expected.add(minus);
+		expected.add(EPSILON);
+		actual = expPrime.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// First(addop) = {+, -}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(plus);
+		expected.add(minus);
+		actual = addop.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// First(term) = {(, number}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(leftPar);
+		expected.add(number);
+		actual = term.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// First(term') = {*, empty}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(multiply);
+		expected.add(EPSILON);
+		actual = termPrime.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// First(mulop) = {*}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(multiply);
+		actual = mulop.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// First(factor) = {(, number}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(leftPar);
+		expected.add(number);
+		actual = factor.getFirst();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+	}
+	
+	public void testFollow() {
+		ParseTable.follow(grammar);
 	}
 
 	@Test
 	public void testParseTable() {
-		
-		ParseTable expected = new ParseTable();
+
+//		this.parseTable = new ParseTable(grammar);
+//		ParseTable expected = new ParseTable();
 		
 		fail("Not yet implemented");
 	}

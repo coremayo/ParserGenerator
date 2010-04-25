@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.cs3240.parsergenerator.utils.Helper;
+import static com.cs3240.parsergenerator.Domain.Symbol.EPSILON;
+import static com.cs3240.parsergenerator.Domain.Symbol.$;
 
 public class ParseTable {
 
@@ -53,43 +55,27 @@ public class ParseTable {
 		while (changes) {
 			changes = false;
 
-			List<Rule> productionChoices = grammar.getAllRules();
+			// iterate over each rule where A is on the left-hand side and X_k on the right
+			for (Rule r : grammar.getAllRules()) {
 
-			if (productionChoices != null) {
-
-				// iterate over each rule where A is on the left-hand side and X_k on the right
-				for (Rule rule : productionChoices) {
-
-					NonterminalSymbol A = rule.getLhs();
-
-					int k = 0;
-					boolean cont = true;
-
-					while (cont && k < productionChoices.size()) {
-
-						// X_k is the first symbol in the rhs of the rule
-						Symbol XK = rule.get(0);
-
-						Set<TerminalSymbol> toAdd;
-
-						// firstXK = first(X_k)
-						Set<TerminalSymbol> firstXK = XK.getFirst();
-
-						// firstA = first(A)
-						Set<TerminalSymbol> firstA = A.getFirst();
-
-						// add symbols that are in the first set of the current rule but not A
-						toAdd = new TreeSet<TerminalSymbol>(firstXK);
-						toAdd.removeAll(firstA);
-
-						// if some rule is going to be added to A then set our changes flag
-						if (toAdd.size() > 0) {
-							firstA.addAll(toAdd);
-							changes = true;
-							cont = false;
-						}
-						k++;
+				NonterminalSymbol A = r.getLhs();
+				List<Symbol> rule = r.getRule();
+				
+				boolean cont = true;
+				int k = 0;
+				
+				while (cont && k < rule.size()) {
+					Symbol Xk = rule.get(k);
+					k++;
+					
+					changes |= Helper.addAllExceptFor(Xk.getFirst(), A.getFirst(), EPSILON);
+					
+					if (!Xk.getFirst().contains(EPSILON)) {
+						cont = false;
 					}
+				}
+				if (cont) {
+					changes |= A.getFirst().add(EPSILON);
 				}
 			}
 		}
@@ -109,7 +95,7 @@ public class ParseTable {
 		}
 		
 		// the $ is automatically in the follow set of the start symbol
-		grammar.getStartRule().getFollow().add(Symbol.$);
+		grammar.getStartRule().getFollow().add($);
 		
 		boolean changes = true;
 		
@@ -135,7 +121,7 @@ public class ParseTable {
 						if (i == rule.size() - 1) {
 							// if i=n then Xi+1...Xn = epsilon
 							firstXn = new TreeSet<TerminalSymbol>();
-							firstXn.add(Symbol.EPSILON);
+							firstXn.add(EPSILON);
 							
 						} else {
 							// calculate first(Xi+1...Xn)
@@ -143,10 +129,10 @@ public class ParseTable {
 						}
 						
 						// add [first(Xi+1 Xi+2...Xn) - {epsilon}] to follow(Xi)
-						changes |= Helper.addAllExceptFor(firstXn, ((NonterminalSymbol) Xi).getFollow(), Symbol.EPSILON);
+						changes |= Helper.addAllExceptFor(firstXn, ((NonterminalSymbol) Xi).getFollow(), EPSILON);
 						
 						// if epsilon is in first(Xi+1...Xn) then add follow(A) to follow(Xi)
-						if (firstXn.contains(Symbol.EPSILON)) {
+						if (firstXn.contains(EPSILON)) {
 							
 							changes |= ((NonterminalSymbol) Xi).getFollow().addAll(A.getFollow());
 						}
@@ -162,11 +148,11 @@ public class ParseTable {
 		
 		while (k < alpha.size() && first.isEmpty()) {
 			Symbol Xk = alpha.get(k);
-			Helper.addAllExceptFor(Xk.getFirst(), first, Symbol.EPSILON);
+			Helper.addAllExceptFor(Xk.getFirst(), first, EPSILON);
 			k++;
 		}
 		if (first.isEmpty()) {
-			first.add(Symbol.EPSILON);
+			first.add(EPSILON);
 		}
 		return first;
 	}
@@ -184,7 +170,7 @@ public class ParseTable {
 				table.add(new ParseTableEntry(A, s, action));
 			}
 			
-			if (firstA.contains(Symbol.EPSILON)) {
+			if (firstA.contains(EPSILON)) {
 				for (TerminalSymbol s : A.getFollow()) {
 					ParseAction action = new ParseAction(A, rule);
 					table.add(new ParseTableEntry(A, s, action));

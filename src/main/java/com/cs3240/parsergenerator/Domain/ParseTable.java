@@ -13,6 +13,11 @@ public class ParseTable {
 
 	/** Maps the parse table's DFA state to its entry containing inputs and goto's. */
 	private List<ParseTableEntry> table;
+	
+	public void setTable(List<ParseTableEntry> table) {
+		this.table = table;
+	}
+
 	private NonterminalSymbol startSymbol;
 	private List<NonterminalSymbol> nonTerminalSymbols;
 	private List<TerminalSymbol> terminalSymbols;

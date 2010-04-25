@@ -1,6 +1,6 @@
 package com.cs3240.parsergenerator.Domain;
 
-public class ParseAction {
+public class ParseAction implements Comparable<ParseAction> {
 	private NonterminalSymbol leftHandSide;
 	private Rule rule;
 	
@@ -45,5 +45,18 @@ public class ParseAction {
 		builder.append(" : ");
 		builder.append(rule);
 		return builder.toString();
+	}
+
+	@Override
+	public int compareTo(ParseAction that) {
+		if (this.equals(that)) {
+			return 0;
+		}
+		
+		if (!this.leftHandSide.equals(that.leftHandSide)) {
+			return this.leftHandSide.compareTo(that.leftHandSide);
+		}
+		
+		return this.rule.compareTo(that.rule);
 	}
 }

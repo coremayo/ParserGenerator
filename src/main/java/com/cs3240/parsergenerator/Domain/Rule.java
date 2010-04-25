@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class Rule {
+public class Rule implements Comparable<Rule> {
 	
 	private NonterminalSymbol lhs;
 	
@@ -84,4 +84,26 @@ public class Rule {
 		return theRule.hashCode();
 	}
 
+	@Override
+	public int compareTo(Rule that) {
+		if (this.equals(that)) {
+			return 0;
+		}
+		
+		if (this.lhs != null && !this.lhs.equals(that)) {
+			return this.lhs.compareTo(that.lhs);
+		}
+		
+		if (this.theRule.size() != that.theRule.size()) {
+			return this.theRule.size() - that.theRule.size();
+		}
+		
+		// we know at this point that both rules are the same size
+		for (int i = 0; i < this.theRule.size(); i++) {
+			if (!this.theRule.get(i).equals(that.theRule.get(i))) {
+				return this.theRule.get(i).compareTo(that.theRule.get(i));
+			}
+		}
+		return 0;
+	}
 }

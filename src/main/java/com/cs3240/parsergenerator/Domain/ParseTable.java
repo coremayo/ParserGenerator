@@ -1,7 +1,6 @@
 package com.cs3240.parsergenerator.Domain;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -186,5 +185,13 @@ public class ParseTable {
 
 	public void setNonterminalSymbols(List<NonterminalSymbol> symbols) {
 		this.nonTerminalSymbols = symbols;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ParseTable) {
+			return table.equals(((ParseTable) obj).getAllEntries());
+		}
+		return false;
 	}
 }

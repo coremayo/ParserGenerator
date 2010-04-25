@@ -35,22 +35,29 @@ public class Driver {
 		parsingStack.push(Symbol.$);
 		parsingStack.push(table.getStartState());
 		
-		while(!parsingStack.peek().equals(Symbol.$) && !inputQueue.peekFirst().equals(Symbol.$)) {
+		while(!parsingStack.peek().equals(Symbol.$)) {
 			//MATCH
-			if (parsingStack.peek().equals(inputQueue.peekFirst())) {
+			if (parsingStack.peek().equals(Symbol.EPSILON)) {
+				parsingStack.pop();
+				continue;
+			}else if (parsingStack.peek().equals(inputQueue.peekFirst())) {
 				parsingStack.pop();
 				inputQueue.remove();
 			
 			//GENERATE	
 			} else if (parsingStack.peek() instanceof NonterminalSymbol
 					&& table.getTableEntry(
+							(NonterminalSymbol) parsingStack.peek(), inputQueue.peek()) != null
+							&& table.getTableEntry(
 							(NonterminalSymbol) parsingStack.peek(), inputQueue.peek())
 							.getNonTerminal().equals(parsingStack.peek())) {
-				parsingStack.pop();
-				for (Symbol s :  table.getTableEntry(
-							(NonterminalSymbol) parsingStack.peek(), inputQueue.peek())
-							.getAction().getRule().getRule()) {
-					parsingStack.push(s);
+				NonterminalSymbol nonT = (NonterminalSymbol)parsingStack.pop();
+				for (int i = table.getTableEntry(
+							nonT, inputQueue.peek())
+							.getAction().getRule().getRule().size() - 1; i >= 0; i --) {
+					parsingStack.push(table.getTableEntry(
+							nonT, inputQueue.peek())
+							.getAction().getRule().getRule().get(i));
 				}
 			} else {
 				return false;

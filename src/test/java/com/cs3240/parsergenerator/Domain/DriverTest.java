@@ -22,7 +22,8 @@ public class DriverTest {
 
 	@Test
 	public void testParse() {
-		fail("Not yet implemented");
+		String input = "NUMBER MINUS NUMBER MINUS NUMBER";
+		assertTrue(Driver.parse(table, input));
 	}
 	
 	@Test

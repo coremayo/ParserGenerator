@@ -40,4 +40,15 @@ public class ParseTableEntry {
 		this(null,null,null);
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof ParseTableEntry) {
+			ParseTableEntry that = (ParseTableEntry) o;
+			return this.nonTerminal.equals(that.nonTerminal) 
+				&& this.terminal.equals(that.terminal) 
+				&& this.action.equals(that.action);
+		}
+		return false;
+	}
+	
 }

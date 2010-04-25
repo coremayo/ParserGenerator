@@ -28,5 +28,15 @@ public class ParseAction {
 	public void setRule(Rule rule) {
 		this.rule = rule;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof ParseAction) {
+			ParseAction that = (ParseAction) o;
+			return this.leftHandSide.equals(that.leftHandSide)
+				&& this.rule.equals(that.rule);
+		}
+		return false;
+	}
 
 }

@@ -39,4 +39,11 @@ public class ParseAction {
 		return false;
 	}
 
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(leftHandSide);
+		builder.append(" : ");
+		builder.append(rule);
+		return builder.toString();
+	}
 }

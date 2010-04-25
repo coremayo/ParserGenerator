@@ -35,6 +35,16 @@ public class ParseTableEntry {
 		this.terminal = term;
 		this.action = act;
 	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(nonTerminal);
+		builder.append(", ");
+		builder.append(terminal);
+		builder.append(", ");
+		builder.append(action);
+		return builder.toString();
+	}
 
 	public ParseTableEntry() {
 		this(null,null,null);

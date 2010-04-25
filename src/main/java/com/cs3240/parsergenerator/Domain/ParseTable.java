@@ -172,8 +172,10 @@ public class ParseTable {
 			Set<TerminalSymbol> firstA = calculateFirst(rule.getRule());
 			
 			for (TerminalSymbol s : firstA) {
-				ParseAction action = new ParseAction(A, rule);
-				table.add(new ParseTableEntry(A, s, action));
+				if (!s.equals(EPSILON)) {
+					ParseAction action = new ParseAction(A, rule);
+					table.add(new ParseTableEntry(A, s, action));
+				}
 			}
 			
 			if (firstA.contains(EPSILON)) {
@@ -215,7 +217,8 @@ public class ParseTable {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ParseTable) {
-			return table.equals(((ParseTable) obj).getAllEntries());
+			ParseTable that = (ParseTable) obj;
+			return Helper.equalsIgnoreOrder(this.table, that.table);
 		}
 		return false;
 	}
@@ -244,5 +247,14 @@ public class ParseTable {
 		}
 		
 		return ret.toString();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for (ParseTableEntry entry : table) {
+			sb.append(entry + "\n");
+		}
+		return sb.toString();
 	}
 }

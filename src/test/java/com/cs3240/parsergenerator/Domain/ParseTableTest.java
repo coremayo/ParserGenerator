@@ -220,7 +220,6 @@ public class ParseTableTest {
 		expected.add(expPrime, $, EPSILON);
 		expected.add(addop, plus, plus);
 		expected.add(addop, minus, minus);
-		expected.add(addop, plus, plus);
 		expected.add(term, leftPar, factor, termPrime);
 		expected.add(term, number, factor, termPrime);
 		expected.add(termPrime, rightPar, EPSILON);

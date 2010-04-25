@@ -19,6 +19,10 @@ public class ParseTable {
 	}
 
 	private NonterminalSymbol startSymbol;
+	public void setStartSymbol(NonterminalSymbol startSymbol) {
+		this.startSymbol = startSymbol;
+	}
+
 	private List<NonterminalSymbol> nonTerminalSymbols;
 	private List<TerminalSymbol> terminalSymbols;
 	

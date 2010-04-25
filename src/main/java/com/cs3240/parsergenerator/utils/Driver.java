@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,12 +63,13 @@ public class Driver {
 		return false;
 	}
 	
-	public static void outputTableToFile(ParseTable table) throws IOException {
+	public static void outputTableToFile(ParseTable table, String filename) throws IOException {
 		List<ParseTableEntry> entries = table.getAllEntries();
 		List<TerminalSymbol> termSymbols = table.getTerminalSymbols();
 		List<NonterminalSymbol> nonTermSymbols = table.getNonTerminalSymbols();
 		StringBuilder builder = new StringBuilder();
-		builder.append("%Terminals ");
+		builder.append("%Terminals");
+		builder.append("\n");
 		ListIterator<TerminalSymbol> termIterator = termSymbols.listIterator();
 		while(termIterator.hasNext()) {
 			builder.append(termIterator.next());
@@ -76,7 +78,8 @@ public class Driver {
 			}
 		}
 		builder.append("\n");
-		builder.append("%NonTerminals ");
+		builder.append("%NonTerminals");
+		builder.append("\n");
 		ListIterator<NonterminalSymbol> nonTermIterator = nonTermSymbols.listIterator();
 		while(nonTermIterator.hasNext()) {
 			builder.append(nonTermIterator.next());
@@ -84,6 +87,10 @@ public class Driver {
 				builder.append(", ");
 			}
 		}
+		builder.append("\n");
+		builder.append("%Start State");
+		builder.append("\n");
+		builder.append(table.getStartState());
 		builder.append("\n");
 		builder.append("%Table Entries");
 		builder.append("\n");
@@ -97,8 +104,21 @@ public class Driver {
 			builder.append(entry.getAction().getRule().toString());
 			builder.append("\n");
 		}
-		FileWriter writer = new FileWriter(new File("parseTable.txt"));
-		writer.write(builder.toString());
+//		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(filename)));
+//		writer.write(builder.toString());
+		try {
+
+		      File file= new File(filename);
+		      FileWriter outFile = new FileWriter(file);
+		      PrintWriter out = new PrintWriter(outFile);
+		      
+		      out.print(builder.toString());
+		      out.close();
+
+		    } catch (IOException e) {
+		      e.printStackTrace();
+		    }
+		
 	}
 	
 	public static ParseTable getTableFromFile(String filename) throws FileNotFoundException {
@@ -106,49 +126,87 @@ public class Driver {
 		tableScanner.useDelimiter("\n");
 		ParseTable table = new ParseTable();
 		List<ParseTableEntry> entries = new ArrayList<ParseTableEntry>();
+		boolean isTerminals = false;
+		boolean isNonterminals = false;
+		boolean isEntries = false;
+		boolean isStart = false;
 		while (tableScanner.hasNext()) {
 			String[] lineSplit = tableScanner.next().split(",");
 			if (lineSplit[0].trim().equals("%Terminals")) {
-				List<TerminalSymbol> symbols = new ArrayList<TerminalSymbol>();
-				for (int i = 1; i < lineSplit.length; i++) {
-					symbols.add(new TerminalSymbol(lineSplit[i].trim()));
-				}
-				table.setTerminalSymbols(symbols);
-			} else if (lineSplit[0].trim().equals("%Terminals")) {
-				List<NonterminalSymbol> symbols = new ArrayList<NonterminalSymbol>();
-				for (int i = 1; i < lineSplit.length; i++) {
-					symbols.add(new NonterminalSymbol(lineSplit[i].trim()));
-				}
-				table.setNonterminalSymbols(symbols);
+				isTerminals = true;
+				isNonterminals = false;
+				isEntries = false;
+				isStart = false;
+				continue;
+			} else if (lineSplit[0].trim().equals("%NonTerminals")) {
+				isTerminals = false;
+				isNonterminals = true;
+				isEntries = false;
+				isStart = false;
+				continue;
 			} else if (lineSplit[0].trim().equals("%Table Entries")) {
+				isTerminals = false;
+				isNonterminals = false;
+				isEntries = true;
+				isStart = false;
+				continue;
+			} else if (lineSplit[0].trim().equals("%Start State")) {
+				isStart = true;
+				isNonterminals = false;
+				isTerminals = false;
+				isEntries = false;
 				continue;
 			} else {
-				ParseTableEntry entry = new ParseTableEntry();
-				entry.setNonTerminal(new NonterminalSymbol(lineSplit[0]));
-				entry.setTerminal(new TerminalSymbol(lineSplit[1]));
-				ParseAction action = new ParseAction();
-				String[] actionString = lineSplit[2].split(" : ");
-				action.setLeftHandSide(new NonterminalSymbol(actionString[0]));
-				List<Symbol> ruleSymbols = new ArrayList<Symbol>();
-				for (String symbolName : actionString[1].split(" ")) {
-					for (TerminalSymbol sym : table.getTerminalSymbols()) {
-						if (sym.getName().equals(symbolName)) {
-							ruleSymbols.add(sym);
-							break;
-						}
+				if (isTerminals) {
+					List<TerminalSymbol> symbols = new ArrayList<TerminalSymbol>();
+					for (int i = 0; i < lineSplit.length; i++) {
+						symbols.add(new TerminalSymbol(lineSplit[i].trim()));
 					}
+					table.setTerminalSymbols(symbols);
+				} else if (isNonterminals) {
+					List<NonterminalSymbol> symbols = new ArrayList<NonterminalSymbol>();
+					for (int i = 0; i < lineSplit.length; i++) {
+						symbols.add(new NonterminalSymbol(lineSplit[i].trim()));
+					}
+					table.setNonterminalSymbols(symbols);
+				} else if (isStart){
 					for (NonterminalSymbol sym : table.getNonTerminalSymbols()) {
-						if (sym.getName().equals(symbolName)) {
-							ruleSymbols.add(sym);
-							break;
+						if (sym.getName().equals(lineSplit[0].trim())) {
+							table.setStartSymbol(sym);
 						}
 					}
+				} else if (isEntries) {
+					ParseTableEntry entry = new ParseTableEntry();
+					entry.setNonTerminal(new NonterminalSymbol(lineSplit[0].trim()));
+					entry.setTerminal(new TerminalSymbol(lineSplit[1].trim()));
+					ParseAction action = new ParseAction();
+					String[] actionString = lineSplit[2].split(":");
+					action.setLeftHandSide(new NonterminalSymbol(actionString[0].trim()));
+					List<Symbol> ruleSymbols = new ArrayList<Symbol>();
+					for (String symbolName : actionString[1].split(" ")) {
+						for (TerminalSymbol sym : table.getTerminalSymbols()) {
+							if (sym.getName().equals(symbolName.trim())) {
+								ruleSymbols.add(sym);
+								break;
+							}
+						}
+						for (NonterminalSymbol sym : table.getNonTerminalSymbols()) {
+							if (sym.getName().equals(symbolName.trim())) {
+								ruleSymbols.add(sym);
+								break;
+							}
+						}
+						if (symbolName.trim().equals(Symbol.EPSILON.getName())) {
+							ruleSymbols.add(Symbol.EPSILON);
+						}
+					}
+					action.setRule(new Rule(ruleSymbols));
+					entry.setAction(action);
+					entries.add(entry);
 				}
-				action.setRule(new Rule(ruleSymbols));
-				entry.setAction(action);
-				entries.add(entry);
 			}
 		}
+		table.setTable(entries);
 		return table;
 	}
 }

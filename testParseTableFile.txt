@@ -1,0 +1,25 @@
+%Terminals 
+LEFTPAR, NUMBER, RIGHTPAR, PLUS, MINUS, MULT, $
+%NonTerminals 
+exp, exp', addop, term, term', mulop, factor
+%Start State
+exp
+%Table Entries
+exp, LEFTPAR, exp : term exp'
+exp, NUMBER, exp : term exp'
+exp', RIGHTPAR, exp' : .
+exp', PLUS, exp' : addop term exp'
+exp', MINUS, exp' : addop term exp'
+exp', $, exp' : .
+addop, PLUS, addop : PLUS
+addop, MINUS, addop : MINUS
+term, LEFTPAR, term : factor term'
+term, NUMBER, term : factor term'
+term', RIGHTPAR, term' : .
+term', PLUS, term' : .
+term', MINUS, term' : .
+term', MULT, term' : mulop factor term'
+term', $, term' : .
+mulop, MULT, mulop : MULT
+factor, LEFTPAR, factor : LEFTPAR exp RIGHTPAR
+factor, NUMBER, factor : NUMBER

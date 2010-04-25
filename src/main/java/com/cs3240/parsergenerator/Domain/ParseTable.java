@@ -205,4 +205,12 @@ public class ParseTable {
 	public void setNonterminalSymbols(List<NonterminalSymbol> symbols) {
 		this.nonTerminalSymbols = symbols;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ParseTable) {
+			return table.equals(((ParseTable) obj).getAllEntries());
+		}
+		return false;
+	}
 }

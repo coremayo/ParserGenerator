@@ -149,6 +149,13 @@ public class ParseTable {
 		}
 		return first;
 	}
+	
+	public void add(NonterminalSymbol non, TerminalSymbol term, Symbol... rule) {
+		Rule parseRule = new Rule(rule);
+		ParseAction act = new ParseAction(non, parseRule);
+		ParseTableEntry entry = new ParseTableEntry(non, term, act);
+		table.add(entry);
+	}
 
 	private void generateTable(Grammar grammar) {
 		this.table = new ArrayList<ParseTableEntry>();

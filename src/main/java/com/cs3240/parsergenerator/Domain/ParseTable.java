@@ -61,22 +61,7 @@ public class ParseTable {
 				NonterminalSymbol A = r.getLhs();
 				List<Symbol> rule = r.getRule();
 				
-				boolean cont = true;
-				int k = 0;
-				
-				while (cont && k < rule.size()) {
-					Symbol Xk = rule.get(k);
-					k++;
-					
-					changes |= Helper.addAllExceptFor(Xk.getFirst(), A.getFirst(), EPSILON);
-					
-					if (!Xk.getFirst().contains(EPSILON)) {
-						cont = false;
-					}
-				}
-				if (cont) {
-					changes |= A.getFirst().add(EPSILON);
-				}
+				changes |= A.getFirst().addAll(calculateFirst(rule));
 			}
 		}
 	}
@@ -146,12 +131,20 @@ public class ParseTable {
 		int k = 0;
 		Set<TerminalSymbol> first = new TreeSet<TerminalSymbol>();
 		
-		while (k < alpha.size() && first.isEmpty()) {
+		boolean cont = true;
+		
+		while (k < alpha.size() && cont) {
 			Symbol Xk = alpha.get(k);
-			Helper.addAllExceptFor(Xk.getFirst(), first, EPSILON);
 			k++;
+			
+			// First(A) contains First(Xi) - {epsilon}
+			Helper.addAllExceptFor(Xk.getFirst(), first, EPSILON);
+			if (!Xk.getFirst().contains(EPSILON)) {
+				cont = false;
+			}
 		}
-		if (first.isEmpty()) {
+		// cont will be true here if First(Xi) contains epsilon for all Xi in the rule A->X1 X2... Xn 
+		if (cont) {
 			first.add(EPSILON);
 		}
 		return first;

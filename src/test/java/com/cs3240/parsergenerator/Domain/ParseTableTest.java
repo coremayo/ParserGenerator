@@ -231,7 +231,7 @@ public class ParseTableTest {
 		expected.add(mulop, multiply, multiply);
 		expected.add(factor, leftPar, leftPar, exp, rightPar);
 		expected.add(factor, number, number);
-		assertEquals(expected, actual);
+		assertEquals(expected.diff(actual), expected, actual);
 	}
 
 }

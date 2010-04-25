@@ -26,6 +26,7 @@ public class ParseTable {
 	}
 
 	public ParseTable(Grammar grammar) {
+		this.table = new ArrayList<ParseTableEntry>();
 		first(grammar);
 		follow(grammar);
 		generateTable(grammar);
@@ -39,6 +40,7 @@ public class ParseTable {
 		this.startSymbol = null;
 		this.nonTerminalSymbols = null;
 		this.terminalSymbols = null;
+		this.table = new ArrayList<ParseTableEntry>();
 	}
 
 
@@ -158,7 +160,6 @@ public class ParseTable {
 	}
 
 	private void generateTable(Grammar grammar) {
-		this.table = new ArrayList<ParseTableEntry>();
 		
 		for (Rule rule : grammar.getAllRules()) {
 			
@@ -212,5 +213,31 @@ public class ParseTable {
 			return table.equals(((ParseTable) obj).getAllEntries());
 		}
 		return false;
+	}
+	
+	public String diff(ParseTable that) {
+		
+		StringBuffer ret = new StringBuffer();
+		
+		if (this.table.size() != that.table.size()) {
+			ret.append("This table has " 
+					+ this.table.size() 
+					+" entries and that table has " 
+					+ that.table.size() + 
+					" entries.\n");
+		}
+
+		for (ParseTableEntry entry : this.table) {
+			if (!that.table.contains(entry)) {
+				ret.append("Entry: " + entry + " is in this but not that.\n");
+			}
+		}
+		for (ParseTableEntry entry : that.table) {
+			if (!this.table.contains(entry)) {
+				ret.append("Entry: " + entry + " is in that but not this.\n");
+			}
+		}
+		
+		return ret.toString();
 	}
 }

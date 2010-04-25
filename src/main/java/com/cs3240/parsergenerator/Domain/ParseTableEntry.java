@@ -50,5 +50,4 @@ public class ParseTableEntry {
 		}
 		return false;
 	}
-	
 }

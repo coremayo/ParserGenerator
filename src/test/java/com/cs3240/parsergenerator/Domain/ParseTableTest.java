@@ -67,11 +67,13 @@ public class ParseTableTest {
 		grammar.addRule(factor, new Rule(leftPar, exp, rightPar));
 		grammar.addRule(factor, new Rule(number));
 		
+		ParseTable.first(grammar);
+
+		ParseTable.follow(grammar);
 	}
 	
 	@Test
 	public void testFirst() {
-		ParseTable.first(grammar);
 		
 		String message;
 		Collection<TerminalSymbol> expected;
@@ -134,8 +136,75 @@ public class ParseTableTest {
 		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 	}
 	
+	@Test
 	public void testFollow() {
-		ParseTable.follow(grammar);
+		
+		String message;
+		Collection<TerminalSymbol> expected;
+		Collection<TerminalSymbol> actual;
+		
+		// Follow(exp) = {$, )}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add($);
+		expected.add(rightPar);
+		actual = exp.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(exp') = {$, )}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add($);
+		expected.add(rightPar);
+		actual = expPrime.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(addop) = {(, number}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(leftPar);
+		expected.add(number);
+		actual = addop.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(term) = {$, ), +, -}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add($);
+		expected.add(rightPar);
+		expected.add(plus);
+		expected.add(minus);
+		actual = term.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(term') = {$, ), +, -}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add($);
+		expected.add(rightPar);
+		expected.add(plus);
+		expected.add(minus);
+		actual = termPrime.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(mulop) = {(, number}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add(leftPar);
+		expected.add(number);
+		actual = mulop.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
+		
+		// Follow(factor) = {$, ), +, -, *}
+		expected = new ArrayList<TerminalSymbol>();
+		expected.add($);
+		expected.add(rightPar);
+		expected.add(plus);
+		expected.add(minus);
+		expected.add(multiply);
+		actual = factor.getFollow();
+		message = "Expected: " + expected + " and got: " + actual;
+		assertTrue(message, Helper.equalsIgnoreOrder(expected, actual));
 	}
 
 	@Test

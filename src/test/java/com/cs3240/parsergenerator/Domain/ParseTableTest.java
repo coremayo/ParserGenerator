@@ -1,7 +1,9 @@
 package com.cs3240.parsergenerator.Domain;
 
+import static com.cs3240.parsergenerator.Domain.Symbol.$;
+import static com.cs3240.parsergenerator.Domain.Symbol.EPSILON;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +11,6 @@ import java.util.Collection;
 import org.junit.Test;
 
 import com.cs3240.parsergenerator.utils.Helper;
-import static com.cs3240.parsergenerator.Domain.Symbol.EPSILON;
-import static com.cs3240.parsergenerator.Domain.Symbol.$;
 
 public class ParseTableTest {
 
@@ -210,10 +210,28 @@ public class ParseTableTest {
 	@Test
 	public void testParseTable() {
 
-//		this.parseTable = new ParseTable(grammar);
-//		ParseTable expected = new ParseTable();
-		
-		fail("Not yet implemented");
+		ParseTable actual = new ParseTable(grammar);
+		ParseTable expected = new ParseTable();
+		expected.add(exp, leftPar, term, expPrime);
+		expected.add(exp, number, term, expPrime);
+		expected.add(expPrime, rightPar, EPSILON);
+		expected.add(expPrime, plus, addop, term, expPrime);
+		expected.add(expPrime, minus, addop, term, expPrime);
+		expected.add(expPrime, $, EPSILON);
+		expected.add(addop, plus, plus);
+		expected.add(addop, minus, minus);
+		expected.add(addop, plus, plus);
+		expected.add(term, leftPar, factor, termPrime);
+		expected.add(term, number, factor, termPrime);
+		expected.add(termPrime, rightPar, EPSILON);
+		expected.add(termPrime, plus, EPSILON);
+		expected.add(termPrime, minus, EPSILON);
+		expected.add(termPrime, multiply, mulop, factor, termPrime);
+		expected.add(termPrime, $, EPSILON);
+		expected.add(mulop, multiply, multiply);
+		expected.add(factor, leftPar, leftPar, exp, rightPar);
+		expected.add(factor, number, number);
+		assertEquals(expected, actual);
 	}
 
 }

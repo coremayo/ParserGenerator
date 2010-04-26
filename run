@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar target/program.jar
+java -jar target/program.jar $@

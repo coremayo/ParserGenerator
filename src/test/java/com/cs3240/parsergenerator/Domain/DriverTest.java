@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import com.cs3240.parsergenerator.exceptions.InvalidSyntaxException;
 import com.cs3240.parsergenerator.utils.Driver;
 
 public class DriverTest {
@@ -21,7 +22,7 @@ public class DriverTest {
 	}
 
 	@Test
-	public void testParse() {
+	public void testParse() throws InvalidSyntaxException {
 		String input = "NUMBER MINUS NUMBER MINUS NUMBER";
 		assertTrue(Driver.parse(table, input));
 	}

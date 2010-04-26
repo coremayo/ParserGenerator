@@ -19,12 +19,14 @@ import com.cs3240.parsergenerator.Domain.ParseTableEntry;
 import com.cs3240.parsergenerator.Domain.Rule;
 import com.cs3240.parsergenerator.Domain.Symbol;
 import com.cs3240.parsergenerator.Domain.TerminalSymbol;
+import com.cs3240.parsergenerator.exceptions.InvalidSyntaxException;
 
 public class Driver {
 
-	public static boolean parse(ParseTable table, String input) {
+	public static boolean parse(ParseTable table, String input) throws InvalidSyntaxException {
 		Stack<Symbol> parsingStack = new Stack<Symbol>();
 		LinkedList<TerminalSymbol> inputQueue = new LinkedList<TerminalSymbol>();
+		StringBuilder currentSentence = new StringBuilder();
 		//add input to queue
 		for (String s : input.split(" ")) {
 			inputQueue.add(new TerminalSymbol(s));
@@ -42,7 +44,8 @@ public class Driver {
 				continue;
 			}else if (parsingStack.peek().equals(inputQueue.peekFirst())) {
 				parsingStack.pop();
-				inputQueue.remove();
+				currentSentence.append(inputQueue.remove());
+				currentSentence.append(" ");
 			
 			//GENERATE	
 			} else if (parsingStack.peek() instanceof NonterminalSymbol
@@ -60,14 +63,14 @@ public class Driver {
 							.getAction().getRule().getRule().get(i));
 				}
 			} else {
-				return false;
+				throw new InvalidSyntaxException(inputQueue.peek(), currentSentence.toString());
 			}
 		}
 		if (parsingStack.peek().equals(Symbol.$) 
 				&& inputQueue.peek().equals(Symbol.$)) {
 			return true;
 		}
-		return false;
+		throw new InvalidSyntaxException(inputQueue.peek(), currentSentence.toString());
 	}
 	
 	public static void outputTableToFile(ParseTable table, String filename) throws IOException {

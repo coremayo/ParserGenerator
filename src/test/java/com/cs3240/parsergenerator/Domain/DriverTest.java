@@ -36,9 +36,9 @@ public class DriverTest {
 		assertTrue(table.getStartState() != null);
 		assertTrue(table.getNonTerminalSymbols().size() == 7);
 		assertTrue(table.getAllEntries() != null);
-		for(ParseTableEntry entry : table.getAllEntries()) {
-			System.out.println(entry);
-		}
+//		for(ParseTableEntry entry : table.getAllEntries()) {
+//			System.out.println(entry);
+//		}
 		assertTrue(table.getAllEntries().size() == 18);
 	}
 	

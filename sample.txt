@@ -1,6 +1,1 @@
-begin
-b := a * b;
-c := a % b;
-d := 10 * b % 4;
-a := ( 8 * b % 2 * ( 5 - 3 ) * 21; 
-end
+BEGIN ID ASSIGN INTNUM SEMICOLON END

@@ -9,6 +9,7 @@ import java.util.Collection;
 import org.junit.Test;
 
 import com.cs3240.parsergenerator.utils.Helper;
+import com.cs3240.parsergenerator.utils.ParseTableGenerator;
 
 /**
  * Tests the first() and follow() methods. The grammar used in this test is 
@@ -48,8 +49,8 @@ public class FirstFollowTest {
 		grammar.addRule(exp, new Rule(zero));
 		grammar.addRule(exp, new Rule(one));
 		
-		ParseTable.first(grammar);
-		ParseTable.follow(grammar);
+		ParseTableGenerator.first(grammar);
+		ParseTableGenerator.follow(grammar);
 	}
 	
 	@Test

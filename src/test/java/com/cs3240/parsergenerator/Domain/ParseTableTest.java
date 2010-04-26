@@ -11,6 +11,7 @@ import java.util.Collection;
 import org.junit.Test;
 
 import com.cs3240.parsergenerator.utils.Helper;
+import com.cs3240.parsergenerator.utils.ParseTableGenerator;
 
 public class ParseTableTest {
 
@@ -67,9 +68,9 @@ public class ParseTableTest {
 		grammar.addRule(factor, new Rule(leftPar, exp, rightPar));
 		grammar.addRule(factor, new Rule(number));
 		
-		ParseTable.first(grammar);
+		ParseTableGenerator.first(grammar);
 
-		ParseTable.follow(grammar);
+		ParseTableGenerator.follow(grammar);
 	}
 	
 	@Test
@@ -210,7 +211,7 @@ public class ParseTableTest {
 	@Test
 	public void testParseTable() {
 
-		ParseTable actual = new ParseTable(grammar);
+		ParseTable actual = ParseTableGenerator.generateTable(grammar);
 		ParseTable expected = new ParseTable();
 		expected.add(exp, leftPar, term, expPrime);
 		expected.add(exp, number, term, expPrime);

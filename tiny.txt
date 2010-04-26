@@ -1,4 +1,4 @@
-<Tiny-program > : BEGIN <statement-list> END
+<Tiny-program> : BEGIN <statement-list> END
 <statement-list> : <statement-list> <statement> | <statement>
 <statement> : PRINT LEFTPAR <exp-list> RIGHTPAR SEMICOLON
 <statement> : ID ASSIGN <exp> SEMICOLON

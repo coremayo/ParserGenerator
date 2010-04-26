@@ -1,7 +1,7 @@
 package com.cs3240.parsergenerator;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,8 +12,14 @@ import com.cs3240.parsergenerator.Domain.Symbol;
 import com.cs3240.parsergenerator.Domain.TerminalSymbol;
 
 public final class GrammarFileParser {
-	public static Grammar parse(final String fileName) throws FileNotFoundException {
-		Scanner grammarScanner = new Scanner(new File(fileName));
+	
+	public static Grammar parse(final String fileName) throws IOException {
+		File file = new File(fileName);
+		return parse(file);
+	}
+	
+	public static Grammar parse(final File file) throws IOException {
+		Scanner grammarScanner = new Scanner(file);
     	grammarScanner.useDelimiter("\n");
     	Grammar myGrammar = new Grammar();
     	boolean isDefiningRules = false;

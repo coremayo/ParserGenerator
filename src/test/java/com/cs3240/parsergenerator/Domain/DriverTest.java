@@ -1,8 +1,8 @@
 package com.cs3240.parsergenerator.Domain;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class DriverTest {
 	public DriverTest() {
 		try {
 			table = Driver.getTableFromFile("testParseTableFile.txt");
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			fail("BAD FILE");
 		}
 	}

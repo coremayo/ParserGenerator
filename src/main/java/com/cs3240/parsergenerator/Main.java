@@ -1,105 +1,77 @@
 package com.cs3240.parsergenerator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 
 import com.cs3240.parsergenerator.Domain.Grammar;
-import com.cs3240.parsergenerator.Domain.NonterminalSymbol;
 import com.cs3240.parsergenerator.Domain.ParseTable;
-import com.cs3240.parsergenerator.Domain.Rule;
-import com.cs3240.parsergenerator.Domain.Symbol;
-import com.cs3240.parsergenerator.Domain.TerminalSymbol;
+import com.cs3240.parsergenerator.exceptions.InvalidSyntaxException;
 import com.cs3240.parsergenerator.utils.Driver;
+import com.cs3240.parsergenerator.utils.ParseTableGenerator;
 
 public class Main {
+	
+	@Option(name="-g",
+			required=true,
+			usage="File containing grammar specification",
+			aliases={"--grammar"})
+	private File grammarFile;
+	
+	@Option(name="-i",
+			usage="File containing input to check against the supplied grammar." +
+					"If this is not supplied, then the parse table is written out to " +
+					"the specified filename.",
+			aliases={"--input"})
+	private File inputFile;
+	
+	@Option(name="-o",
+			usage="When a test input is not supplied, the parse table is written to this file.",
+			aliases={"--output"}, 
+			metaVar="FILE")
+	private String outputFilename;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, InvalidSyntaxException {
 		
-		System.out.println(
-				"Please type in grammer, with multiple rules per line separated by the | character \n" +
-				"in the format <a> : b <c> | c where a and c are nonterminals and b is a terminal. \n" +
-				"Hit enter twice to finish.");
+		Main m = new Main();
+		CmdLineParser parser = new CmdLineParser(m);
 		
-		Grammar grammar = new Grammar();
-		
-		Scanner scan = new Scanner(System.in);
-		while (scan.hasNextLine()) {
+		try {
+			parser.parseArgument(args);
 			
-			String line = scan.nextLine();
-			if (line.isEmpty()) {
-				break;
+			if (m.inputFile == null) {
+				String message = "The -o parameter must be used when the -i parameter is absent.";
+				throw new CmdLineException(parser, message);
 			}
 			
-			//TODO validate the line's content before continuing?
-			
-			String[] tokens = line.split(" ");
-			NonterminalSymbol lhs = new NonterminalSymbol(tokens[0]);
-			List<Symbol> currentRule = new ArrayList<Symbol>();
-			
-			// tokens[0] = left hand side of rules
-			// tokens[1] = : character
-			for (int i = 2; i < tokens.length; i++) {
-				
-				// | means end of the current rule
-				if (tokens[i].equals("|")) {
-					Rule rule = new Rule(currentRule);
-					currentRule.clear();
-					rule.setLhs(lhs);
-					grammar.addRule(lhs, rule);
-					if (grammar.getStartRule() == null) {
-						grammar.setStartRule(lhs);
-					}
-					
-				} else {
-					Symbol symbol = null;
-					
-					// two cases here, a terminal or a non-terminal
-					if (tokens[i].charAt(0) == '<') {
-						// we have a non-terminal
-						symbol = new NonterminalSymbol(tokens[i]);
-						
-					} else {
-						// it's a terminal
-						symbol = new TerminalSymbol(tokens[i]);
-					}
-					currentRule.add(symbol);
-				}
-			}
-			Rule r = new Rule(currentRule);
-			r.setLhs(lhs);
-			grammar.addRule(lhs, r);
-			if (grammar.getStartRule() == null) {
-				grammar.setStartRule(lhs);
-			}
+		} catch (CmdLineException e) {
+			System.err.println(e.getMessage());
+			parser.printUsage(System.out);
+			System.exit(1);
 		}
 		
+		Grammar grammar = GrammarFileParser.parse(m.grammarFile);
 		grammar.removeLeftRecursion();
-		ParseTable pt = new ParseTable(grammar);
 		
-		boolean cont = true;
-		while  (cont) {
-			System.out.println("Enter a line to check acceptance by the supplied grammar.");
-			
-			if (Driver.parse(pt, scan.nextLine())) {
-				System.out.println("Successful parse!");
-			} else {
-				System.out.println("Failed parse");
+		ParseTable pt = ParseTableGenerator.generateTable(grammar);
+
+		if (m.inputFile == null) {
+			Driver.outputTableToFile(pt, m.outputFilename);
+		} else {
+			StringBuffer sb = new StringBuffer();
+			BufferedReader reader = new BufferedReader(new FileReader(m.inputFile));
+			String temp;
+			while ((temp = reader.readLine()) != null) {
+				sb.append(temp);
 			}
 
-			while (true) {
-				System.out.print("Would you like to try another? (y/n) [y]");
-				String line = scan.nextLine();
-				if (line.isEmpty()|| line.toLowerCase().equals("y")) {
-					cont = true;
-					break;
-				} else if (line.toLowerCase().equals("n")) {
-					cont = false;
-					break;
-				} else {
-					System.out.println("Invalid answer: \"" + line + "\"");
-				}
-			}
+			String input = sb.toString();
+			Driver.parse(pt, input);
 		}
 	}
 }

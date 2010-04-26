@@ -1,9 +1,10 @@
 package com.cs3240.parsergenerator.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -131,8 +132,20 @@ public class Driver {
 		
 	}
 	
-	public static ParseTable getTableFromFile(String filename) throws FileNotFoundException {
-		Scanner tableScanner = new Scanner(new File(filename));
+	public static ParseTable getTableFromFile(File file) throws IOException {
+		FileInputStream stream = new FileInputStream(file);
+		return getTableFromInput(stream);
+	}
+
+	public static ParseTable getTableFromFile(String filename) throws IOException {
+	
+		return getTableFromFile(new File(filename));
+		
+	}
+
+	public static ParseTable getTableFromInput(InputStream stream) throws IOException {
+
+		Scanner tableScanner = new Scanner(stream);
 		tableScanner.useDelimiter("\n");
 		ParseTable table = new ParseTable();
 		List<ParseTableEntry> entries = new ArrayList<ParseTableEntry>();

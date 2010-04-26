@@ -19,10 +19,10 @@ import com.cs3240.parsergenerator.utils.Helper;
 public class FirstFollowTest {
 	
 	private Grammar grammar;
-	NonterminalSymbol statement = new NonterminalSymbol("statement");
-	NonterminalSymbol ifstmt = new NonterminalSymbol("if-stmt");
-	NonterminalSymbol elsepart = new NonterminalSymbol("else-part");
-	NonterminalSymbol exp = new NonterminalSymbol("exp");
+	NonterminalSymbol statement = new NonterminalSymbol("<statement>");
+	NonterminalSymbol ifstmt = new NonterminalSymbol("<if-stmt>");
+	NonterminalSymbol elsepart = new NonterminalSymbol("<else-part>");
+	NonterminalSymbol exp = new NonterminalSymbol("<exp>");
 	TerminalSymbol other = new TerminalSymbol("other");
 	TerminalSymbol ifSym = new TerminalSymbol("if");
 	TerminalSymbol elseSym = new TerminalSymbol("elseSym");
@@ -39,19 +39,6 @@ public class FirstFollowTest {
 		// else-part -> *else* statement | empty
 		// exp -> *0* | *1*
 		this.grammar = new Grammar();
-		grammar.addSymbol(statement);
-		grammar.addSymbol(ifstmt);
-		grammar.addSymbol(elsepart);
-		grammar.addSymbol(exp);
-		grammar.addSymbol(other);
-		grammar.addSymbol(ifSym);
-		grammar.addSymbol(elseSym);
-		grammar.addSymbol(openParen);
-		grammar.addSymbol(closeParen);
-		grammar.addSymbol(zero);
-		grammar.addSymbol(one);
-		grammar.addSymbol(Symbol.EPSILON);
-		
 		grammar.setStartRule(statement);
 		grammar.addRule(statement, new Rule(ifstmt));
 		grammar.addRule(statement, new Rule(other));

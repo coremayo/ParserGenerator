@@ -13,37 +13,52 @@ import java.util.Set;
  * non-terminal by keeping a mapping of nonterminal symbols to rules.
  */
 public class Grammar {
-	private List<TerminalSymbol> listOfTerminalSymbols;
-	private List<NonterminalSymbol> listOfNonterminalSymbols;
+	private List<TerminalSymbol> terminalSymbols;
+	private List<NonterminalSymbol> nonterminalSymbols;
 	private Map<NonterminalSymbol, List<Rule>> rulesMap;
 	private NonterminalSymbol startRule;
 	
 	public Grammar() {
-		this.listOfTerminalSymbols = new ArrayList<TerminalSymbol>();
-		this.listOfNonterminalSymbols = new ArrayList<NonterminalSymbol>();
+		this.terminalSymbols = new ArrayList<TerminalSymbol>();
+		this.nonterminalSymbols = new ArrayList<NonterminalSymbol>();
 		this.rulesMap = new HashMap<NonterminalSymbol, List<Rule>>();
 	}
 	
 	/**
-	 * Adds a symbol to this grammar.
+	 * Adds a symbol to this grammar only if the symbol isn't already in the 
+	 * grammar, i.e. checks for duplicates.
+	 * 
 	 * @param symbol The symbol to add.
+	 * @deprecated no longer needed, this is taken care of by the addRule() 
+	 * method. Make scope private when no longer used.
 	 */
 	public void addSymbol(Symbol symbol) {
 		if (symbol instanceof TerminalSymbol) {
-			listOfTerminalSymbols.add((TerminalSymbol) symbol);
+			if (!terminalSymbols.contains(symbol)) {
+				terminalSymbols.add((TerminalSymbol) symbol);
+			}
 		} else {
-			listOfNonterminalSymbols.add((NonterminalSymbol)symbol);
+			if (!nonterminalSymbols.contains(symbol)) {
+				nonterminalSymbols.add((NonterminalSymbol)symbol);
+			}
 			
 		}
 	}
 	
 	/**
-	 * Adds a rule to the rules map.   
+	 * Adds a rule to the rules map. Also, if any of the symbols in the rule 
+	 * are not already in the grammar, they are also added.
 	 * 
 	 * @param symbol A Nonterminal, since they are only symbols with rules
 	 * @param rule The rule for this nonterminal
 	 */
 	public void addRule(NonterminalSymbol symbol, Rule rule) {
+		
+		addSymbol(symbol);
+		for (Symbol s : rule.getRule()) {
+			addSymbol(s);
+		}
+		
 		addRule(symbol, rule.getRule());
 	}
 	
@@ -98,13 +113,13 @@ public class Grammar {
 	public String toString() {
 		//First, the symbols
 		StringBuilder build = new StringBuilder();
-		build.append("TERMINAL SYMBOLS (" + listOfTerminalSymbols.size() + "): ");
-		for (Symbol s : listOfTerminalSymbols) {
+		build.append("TERMINAL SYMBOLS (" + terminalSymbols.size() + "): ");
+		for (Symbol s : terminalSymbols) {
 			build.append(s.getName() + " ");
 		}
 		build.append("\n");
-		build.append("NONTERMINAL SYMBOLS (" + listOfNonterminalSymbols.size() + "): ");
-		for (Symbol s : listOfNonterminalSymbols) {
+		build.append("NONTERMINAL SYMBOLS (" + nonterminalSymbols.size() + "): ");
+		for (Symbol s : nonterminalSymbols) {
 			build.append(s.getName() + " ");
 		}
 		build.append("\n");
@@ -133,7 +148,7 @@ public class Grammar {
 		//create copy of list since listOfNonterminals will be changing from immediate
 		//left recursion.
 		List<NonterminalSymbol> tempList = 
-			new ArrayList<NonterminalSymbol>(listOfNonterminalSymbols);
+			new ArrayList<NonterminalSymbol>(nonterminalSymbols);
 		
 		//Nasty for loop of death, check firsts, removes general left recursion
 		//then goes on to remove any immediate left recursion.
@@ -168,7 +183,7 @@ public class Grammar {
 		boolean isChanging = true;
 		while(isChanging) {
 			isChanging = false;
-			for (NonterminalSymbol nonTermSymbol : new ArrayList<NonterminalSymbol>(listOfNonterminalSymbols)) {
+			for (NonterminalSymbol nonTermSymbol : new ArrayList<NonterminalSymbol>(nonterminalSymbols)) {
 				List<Rule> rulesForNonTerm = rulesMap.get(nonTermSymbol);
 				Map<Symbol, Integer> alphaCounts = new HashMap<Symbol, Integer>();
 				List<Rule> rulesToRemove = new ArrayList<Rule>();
@@ -202,8 +217,8 @@ public class Grammar {
 						NonterminalSymbol newSymbol = new NonterminalSymbol(maxAlpha.getName() + "FACTOR");
 						newRule.add(rule.get(0));
 						newRule.add(newSymbol);
-						if (!listOfNonterminalSymbols.contains(newSymbol)) {
-							listOfNonterminalSymbols.add(newSymbol);
+						if (!nonterminalSymbols.contains(newSymbol)) {
+							nonterminalSymbols.add(newSymbol);
 						}
 						if (!rulesToAdd.contains(new Rule(newRule))) {
 							rulesToAdd.add(new Rule(newRule));
@@ -283,29 +298,29 @@ public class Grammar {
 				rule.add(newSymbol);
 			}
 			rulesMap.put(ai, newRulesForAi);
-			listOfNonterminalSymbols.add(newSymbol);
+			nonterminalSymbols.add(newSymbol);
 			rulesMap.put(newSymbol, rulesForNewSymbol);
 		}
 	}
 
 	public List<TerminalSymbol> getListOfTerminalSymbols() {
-		return listOfTerminalSymbols;
+		return terminalSymbols;
 	}
 
 	/**
 	 * @return A list of all nonterminal symbols used in the grammar.
 	 */
 	public List<NonterminalSymbol> getNonTerminals() {
-		return this.listOfNonterminalSymbols;
+		return this.nonterminalSymbols;
 	}
 
 	public Symbol getSymbol(String name) {
-		for (Symbol s : listOfNonterminalSymbols) {
+		for (Symbol s : nonterminalSymbols) {
 			if (s.getName().equals(name)) {
 				return s;
 			}
 		}
-		for (Symbol s : listOfTerminalSymbols) {
+		for (Symbol s : terminalSymbols) {
 			if (s.getName().equals(name)) {
 				return s;
 			}

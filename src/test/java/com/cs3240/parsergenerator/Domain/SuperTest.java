@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.cs3240.parsergenerator.GrammarFileParser;
 import com.cs3240.parsergenerator.utils.Driver;
+import com.cs3240.parsergenerator.utils.ParseTableGenerator;
 
 public class SuperTest {
 
@@ -21,7 +22,7 @@ public class SuperTest {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd-Hmmss");
 		Grammar grammar = GrammarFileParser.parse("GrammarSample.txt");
 		grammar.removeLeftRecursion();
-		ParseTable pt = new ParseTable(grammar);
+		ParseTable pt = ParseTableGenerator.generateTable(grammar);
 		Driver.outputTableToFile(pt, "output-" + df.format(new Date()) + ".txt");
 
 		assertTrue(Driver.parse(pt, "LEFTPAR NUMBER ID NUMBER RIGHTPAR"));

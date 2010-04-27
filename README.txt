@@ -37,8 +37,6 @@ Usage:
 The following combinations of parameters are valid:
   -g and -i
   -g and -o
-  -g, -s, and -so
   -pt and -i
-  -pt, -g, -s, and -so
-  -s, -so
+  -s, and -so
 

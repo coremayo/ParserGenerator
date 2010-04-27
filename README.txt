@@ -6,12 +6,12 @@ James King
 Corey Mayo
 
 To Compile:
-From the project's root directory, type "./compile". This will invoke apacke maven, which was used as this projects build tool. A file called "project.jar" will be created in the "target/" directory.
+From the project's root directory, type "./compile". This will invoke Apache Maven, which was used as this projects build tool. A file called "project.jar" will be created in the "target/" directory.
 
 To Run:
 This program requires the Sun Java runtime environment to be installed and a Unix/Linux based system.
 
-Type "./run" from the project's root directory. This will invoke the system's java command. When called without any parameters, the program will print usage then exit. 
+Type "./run" from the project's root directory. This will invoke the system's java command. When called without any parameters, the program will print usage then exit.
 
 -g (--grammar) FILE : File containing grammar specification
 -i (--input) FILE   : File containing input to check against the supplied

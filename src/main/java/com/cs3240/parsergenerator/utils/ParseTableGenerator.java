@@ -81,7 +81,7 @@ public static void first(Grammar grammar) {
 		}
 		
 		// the $ is automatically in the follow set of the start symbol
-		grammar.getStartRule().getFollow().add($);
+		grammar.getStartSymbol().getFollow().add($);
 		
 		boolean changes = true;
 		

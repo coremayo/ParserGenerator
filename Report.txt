@@ -1,0 +1,36 @@
+Project Report - Parser Generator
+CS 3240 Spring 2010
+James Jones
+James King
+Corey Mayo
+==================================
+
+------------------
+1. Implementation
+------------------
+
+We implemented our project in Java 1.6. Our very first step was to rewrite the TINY grammar;
+then we used the Java Scanner class to build a simple lexer to take in strings of sample
+programs and output the associated tokens.
+
+To assist in this first part, we created an enum class specific to TINY called LexicalClass.
+This class holds the set of TINY tokens and a parseToken() method to parse them from an
+input string. We wrote a simple driver to scan some simple TINY programs and check them
+for output.
+
+Next, we split the work in the parser generator. After building the shell classes for 
+entities such as Grammar, Symbol, and Rule, Corey worked on the code to build parse tables,
+including building the first and follow sets, while Bobby and Andy developed the Grammar
+methods to remove left recursion and handle left-factoring, using the algorithms described
+in the Louden text.
+
+Finally, we combined [...]
+
+Also, we created a custom exception, InvalidSyntaxException, to throw on two occasions:
+	1. When the parser reads in input and no ParseAction (rule) exists in the ParseTable for
+		the given input.
+	2. When the parser has finished, but finds that either the parsing stack or	input contains
+		further symbols (both are not $ at the end).
+
+
+

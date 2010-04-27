@@ -64,6 +64,8 @@ public class Main {
             parser.parseArgument(args);
             
             if (m.tinyProgramFile != null) {
+            	// user specified -s and -so
+            	
             	Scanner scan = new Scanner(new BufferedReader(new FileReader(m.tinyProgramFile)));   
             	StringBuffer output = new StringBuffer();
             	
@@ -83,70 +85,71 @@ public class Main {
         			}
             	}
             	try {
-                    File file= new File(m.tinyTokenName);
-                    FileWriter outFile = new FileWriter(file);
-                    PrintWriter out = new PrintWriter(outFile);
+            		File file= new File(m.tinyTokenName);
+            		FileWriter outFile = new FileWriter(file);
+            		PrintWriter out = new PrintWriter(outFile);
 
-                    out.print(output.toString());
-                    out.close();
+            		out.print(output.toString());
+            		out.close();
 
-              } catch (IOException e) {
-                throw new CmdLineException(parser, "Bad filename for tinyProgram file");
-              }
-              System.out.println("Successfully tokenized file.");
-              System.exit(0);
-              
-            }
+            	} catch (IOException e) {
+            		throw new CmdLineException(parser, "Bad filename for tinyProgram file");
+            	}
+            	System.out.println("Successfully tokenized file.");
+            	System.exit(0);
 
-            if (m.inputFile == null && m.outputFilename == null && m.parseTableFile == null) {
-                String message = "The -o parameter must be used when the -i parameter is absent.";
-                throw new CmdLineException(parser, message);
-            }
-            
-            if (m.grammarFile != null && m.parseTableFile != null) {
-            	String message = "The -g parameter and the -pt cannot be used at the same time.";
-                throw new CmdLineException(parser, message);
-            }
-            
-            if (m.grammarFile == null && m.parseTableFile == null) {
-            	String message = "You must use either the -g parameter or the -pt parameter.";
-                throw new CmdLineException(parser, message); 
-            }
-            
-            if (m.parseTableFile != null && m.inputFile == null) {
-            	String message = "You must use the -i parameter to use the -pt parameter.";
-                throw new CmdLineException(parser, message);
-            }
+            } else if (m.parseTableFile != null){
+            	// user specified -pt and -i
+            	if (m.inputFile == null) {
+            		throw new CmdLineException(parser, "The -i parameter must be used with -pt.");
+            	}
+            	ParseTable pt = Driver.getTableFromFile(m.parseTableFile);
+                StringBuffer sb = new StringBuffer();
+                BufferedReader reader = new BufferedReader(new FileReader(m.inputFile));
+                String temp;
+                while ((temp = reader.readLine()) != null) {
+                    sb.append(temp);
+                }
 
+                String input = sb.toString();
+                if (Driver.parse(pt, input)) {
+                	System.out.println("Your input is valid with the grammar");
+                }
+            	
+            } else if (m.inputFile != null) {
+            	// -g and -i
+            	if (m.grammarFile == null) {
+            		throw new CmdLineException(parser, "You must specify a grammar file with the -g option.");
+            	}
+            	Grammar grammar = GrammarFileParser.parse(m.grammarFile);
+            	grammar.removeLeftRecursion();
+            	ParseTable pt = ParseTableGenerator.generateTable(grammar);
+                StringBuffer sb = new StringBuffer();
+                BufferedReader reader = new BufferedReader(new FileReader(m.inputFile));
+                String temp;
+                while ((temp = reader.readLine()) != null) {
+                    sb.append(temp);
+                }
+
+                String input = sb.toString();
+                if (Driver.parse(pt, input)) {
+                	System.out.println("Your input is valid with the grammar");
+                }
+            	
+            } else {
+            	// -g and -o
+            	if (m.grammarFile == null) {
+            		throw new CmdLineException(parser, "You must specify a grammar file with the -g option.");
+            	}
+            	Grammar grammar = GrammarFileParser.parse(m.grammarFile);
+            	grammar.removeLeftRecursion();
+            	ParseTable pt = ParseTableGenerator.generateTable(grammar);
+                Driver.outputTableToFile(pt, m.outputFilename);
+            }
         } catch (CmdLineException e) {
-            System.err.println(e.getMessage());
-            parser.printUsage(System.out);
-            System.exit(1);
-        }
-
-        ParseTable pt = null;
-        if (m.grammarFile != null) {
-        	Grammar grammar = GrammarFileParser.parse(m.grammarFile);
-        	grammar.removeLeftRecursion();
-        	pt = ParseTableGenerator.generateTable(grammar);        	
-        } else {
-        	pt = Driver.getTableFromFile(m.parseTableFile);
-        }
-
-        if (m.inputFile == null) {
-            Driver.outputTableToFile(pt, m.outputFilename);
-        } else {
-            StringBuffer sb = new StringBuffer();
-            BufferedReader reader = new BufferedReader(new FileReader(m.inputFile));
-            String temp;
-            while ((temp = reader.readLine()) != null) {
-                sb.append(temp);
-            }
-
-            String input = sb.toString();
-            if (Driver.parse(pt, input)) {
-            	System.out.println("Your input is valid with the grammar");
-            }
+        	System.err.println(e.getMessage());
+        	parser.printUsage(System.out);
+        	System.exit(1);
         }
     }
 }

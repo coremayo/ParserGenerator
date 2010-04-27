@@ -1,1 +1,5 @@
-BEGIN ID ASSIGN INTNUM SEMICOLON END
+begin 
+a := 10 * 3;
+b := a % 7;
+print ( b );
+end

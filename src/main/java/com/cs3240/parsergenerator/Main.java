@@ -3,7 +3,10 @@ package com.cs3240.parsergenerator;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -40,6 +43,11 @@ public class Main {
     		aliases="--parseTable")
     private File parseTableFile;
     
+    @Option(name="-s",
+    	usage="Takes in a tiny program file, and outputs tokens to a file called <filename>-tokenized.txt",
+    		aliases="--scan")
+    private File tinyProgramFile;
+    
     public static void main(String[] args)
     throws IOException, InvalidSyntaxException {
 
@@ -48,7 +56,44 @@ public class Main {
         CmdLineParser parser = new CmdLineParser(m);
 
         try {
-            parser.parseArgument(args); 
+            parser.parseArgument(args);
+            
+            if (m.tinyProgramFile != null) {
+            	Scanner scan = new Scanner(new BufferedReader(new FileReader(m.tinyProgramFile)));   
+            	StringBuffer output = new StringBuffer();
+            	
+            	while (scan.hasNextLine()) {
+            		String nextLine = scan.nextLine();
+            		Scanner lineScan = new Scanner(nextLine);
+            		while (lineScan.hasNext()) {
+            			String token = lineScan.next();
+            			if (token.contains(";")) {
+            				String nonSemi = token.substring(0, token.length()-1);
+            				String semi = token.substring(token.length()-1);
+            				output.append(LexicalClass.parseToken(nonSemi).toString() + " ");
+            				output.append(LexicalClass.parseToken(semi).toString() + " ");
+            			} else {
+            				output.append(LexicalClass.parseToken(token).toString() + " ");
+            			}
+        			}
+            	}
+            	try {
+
+                    File file= new File(m.tinyProgramFile.getParent() + m.tinyProgramFile.getName() + "-tokenized.txt");
+                    FileWriter outFile = new FileWriter(file);
+                    PrintWriter out = new PrintWriter(outFile);
+
+                    out.print(output.toString());
+                    out.close();
+
+              } catch (IOException e) {
+                throw new CmdLineException(parser, "Bad filename for tinyProgram file");
+              }
+              
+              if (m.inputFile == null) {
+            	  m.inputFile = new File(m.tinyProgramFile.getParent() + m.tinyProgramFile.getName() + "-tokenized.txt");
+              }
+            }
 
             if (m.inputFile == null && m.outputFilename == null && m.parseTableFile == null) {
                 String message = "The -o parameter must be used when the -i parameter is absent.";

@@ -110,8 +110,6 @@ public class Driver {
             builder.append(", ");
             builder.append(entry.getTerminal());
             builder.append(", ");
-            builder.append(entry.getAction().getLeftHandSide());
-            builder.append(" : ");
             builder.append(entry.getAction().getRule().toString());
             builder.append("\n");
         }

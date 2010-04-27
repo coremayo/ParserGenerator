@@ -258,7 +258,6 @@ public class Grammar {
                 }
             }
         }
-
     }
 
     /**
@@ -279,7 +278,7 @@ public class Grammar {
          * add a rule that removes the first symbol in the rule (should be
          * ai) and adds to the add our new Symbol (ai prime).
          */
-        for (Rule rule : rulesForAi){
+        for (Rule rule : rulesForAi) {
             Rule ruleClone = null;
             try {
                 ruleClone = (Rule) rule.clone();
@@ -293,7 +292,7 @@ public class Grammar {
                 ruleClone.add(newSymbol);
                 rulesForNewSymbol.add(ruleClone);
                 isNeeded = true;
-                continue;
+                continue; // Why is this?
             }
         }
         /*

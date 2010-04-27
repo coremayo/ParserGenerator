@@ -19,16 +19,25 @@ To Run:
 Type "java -jar target/program.jar" from the project's root directory. This 
 will invoke the system's java command. When called without any parameters, the 
 program will print usage then exit.
+
 Usage:
--g (--grammar) FILE     : File containing grammar specification
--i (--input) FILE       : File containing input to check against the supplied
-                          grammar.If this is not supplied, then the parse
-                          table is written out to the specified filename.
--o (--output) FILE      : When a test input is not supplied, the parse table
-                          is written to this file.
--pt (--parseTable) FILE : File containing a parseTable to check input against,
-                          cannot be using with grammar file input
+-g (--grammar) FILE       : File containing grammar specification
+-i (--input) FILE         : File containing input to check against the
+                            supplied grammar.If this is not supplied, then the
+                            parse table is written out to the specified
+                            filename.
+-o (--output) FILE        : When a test input is not supplied, the parse table
+                            is written to this file.
+-pt (--parseTable) FILE   : File containing a parseTable to check input
+                            against, cannot be using with grammar file input
+-s (--scan) FILE          : Takes in a tiny program file, and outputs tokens
+                            to a file called <filename>-tokenized.txt
+-so (--scannedOutput) VAL : File to output tokenized tiny program to
+
 The following combinations of parameters are valid:
-  -g and either -i or -o
+  -g and -i
+  -g and -o
+  -g, -s, and -so
   -pt and -i
+  -pt, -g, and -so
 

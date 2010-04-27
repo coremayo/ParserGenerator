@@ -44,29 +44,30 @@ public class SuperTest {
     throws IOException, InvalidSyntaxException, GrammarFileParseException {
 
         Grammar grammar = GrammarFileParser.parse(new File("TinyGrammar.txt"));
-        grammar.removeLeftRecursion();
-        ParseTable pt = ParseTableGenerator.generateTable(grammar);
-        Driver.outputTableToFile(pt, "tiny-output-" + df.format(new Date()) + ".txt");
-
-        Scanner scan = new Scanner(new BufferedReader(new FileReader("sample.txt")));
-        StringBuffer output = new StringBuffer();
-
-        while (scan.hasNextLine()) {
-            String nextLine = scan.nextLine();
-            Scanner lineScan = new Scanner(nextLine);
-            while (lineScan.hasNext()) {
-                String token = lineScan.next();
-                if (token.contains(";")) {
-                    String nonSemi = token.substring(0, token.length()-1);
-                    String semi = token.substring(token.length()-1);
-                    output.append(LexicalClass.parseToken(nonSemi).toString() + " ");
-                    output.append(LexicalClass.parseToken(semi).toString() + " ");
-                } else {
-                    output.append(LexicalClass.parseToken(token).toString() + " ");
-                }
-            }
-        }
-        System.out.println(output.toString());
-        assertTrue(Driver.parse(pt, output.toString()));
+        System.out.println(grammar);
+//        grammar.removeLeftRecursion();
+//        ParseTable pt = ParseTableGenerator.generateTable(grammar);
+//        Driver.outputTableToFile(pt, "tiny-output-" + df.format(new Date()) + ".txt");
+//
+//        Scanner scan = new Scanner(new BufferedReader(new FileReader("sample.txt")));
+//        StringBuffer output = new StringBuffer();
+//
+//        while (scan.hasNextLine()) {
+//            String nextLine = scan.nextLine();
+//            Scanner lineScan = new Scanner(nextLine);
+//            while (lineScan.hasNext()) {
+//                String token = lineScan.next();
+//                if (token.contains(";")) {
+//                    String nonSemi = token.substring(0, token.length()-1);
+//                    String semi = token.substring(token.length()-1);
+//                    output.append(LexicalClass.parseToken(nonSemi).toString() + " ");
+//                    output.append(LexicalClass.parseToken(semi).toString() + " ");
+//                } else {
+//                    output.append(LexicalClass.parseToken(token).toString() + " ");
+//                }
+//            }
+//        }
+//        System.out.println(output.toString());
+//        assertTrue(Driver.parse(pt, output.toString()));
     }
 }

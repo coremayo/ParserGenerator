@@ -32,7 +32,7 @@ public class Grammar {
      *
      * @param symbol The symbol to add.
      */
-    private void addSymbol(Symbol symbol) {
+    public void addSymbol(Symbol symbol) {
         if (symbol instanceof TerminalSymbol) {
             if (!terminalSymbols.contains(symbol) && !EPSILON.equals(symbol)) {
                 terminalSymbols.add((TerminalSymbol) symbol);
@@ -188,23 +188,26 @@ public class Grammar {
             isChanging = false;
             for (NonterminalSymbol nonTermSymbol : new ArrayList<NonterminalSymbol>(nonterminalSymbols)) {
                 List<Rule> rulesForNonTerm = rulesMap.get(nonTermSymbol);
-                Map<Symbol, Integer> alphaCounts = new HashMap<Symbol, Integer>();
+                Map<NonterminalSymbol, Integer> alphaCounts = new HashMap<NonterminalSymbol, Integer>();
                 List<Rule> rulesToRemove = new ArrayList<Rule>();
                 List<Rule> rulesToAdd = new ArrayList<Rule>();
                 Map<NonterminalSymbol, List<Rule>> newRulesForNewSymbols = new HashMap<NonterminalSymbol, List<Rule>>();
                 for (Rule rule : rulesForNonTerm) {
-                    Symbol first = rule.get(0);
+                	if (rule.get(0) instanceof TerminalSymbol) {
+                		continue;
+                	}
+                    NonterminalSymbol first = (NonterminalSymbol) rule.get(0);
                     if (alphaCounts.get(first) == null) {
                         alphaCounts.put(first, 1);
                         continue;
                     }
                     alphaCounts.put(first, alphaCounts.get(first) + 1);
                 }
-                Symbol maxAlpha = null;
+                NonterminalSymbol maxAlpha = null;
                 int maxCount = 0;
                 for (Symbol s : alphaCounts.keySet()) {
-                    if (alphaCounts.get(s) > maxCount) {
-                        maxAlpha = s;
+                    if (s instanceof NonterminalSymbol && alphaCounts.get(s) > maxCount) {
+                        maxAlpha = (NonterminalSymbol) s;
                         maxCount = alphaCounts.get(s);
                     }
                 }

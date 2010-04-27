@@ -31,6 +31,10 @@ public final class GrammarFileParser {
                 String message = "Missing %Tokens section at line " + lineNumber;
                 throw new GrammarFileParseException(message);
             }
+            String[] terminalStringList = line.split(" ");
+            for (int i = 1; i < terminalStringList.length; i++) {
+            	grammar.addSymbol(new TerminalSymbol(terminalStringList[i]));
+            }
             lineNumber++;
 
             // the second line should start with "%Non-terminals" followed by a list of non-terminals
@@ -38,6 +42,10 @@ public final class GrammarFileParser {
             if (!line.startsWith("%Non-terminals")) {
                 String message = "Missing %Non-terminals section at line " + lineNumber;
                 throw new GrammarFileParseException(message);
+            }
+            String[] nonTerminalStringList = line.split(" ");
+            for (int i = 1; i < nonTerminalStringList.length; i++) {
+            	grammar.addSymbol(new NonterminalSymbol(nonTerminalStringList[i]));
             }
             lineNumber++;
 

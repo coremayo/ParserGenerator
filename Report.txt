@@ -49,7 +49,250 @@ Also, we created a custom exception, InvalidSyntaxException, to throw on two occ
 ------------------
 3. Problems/Bugs
 ------------------
-The first major issue was that we committed broken "refactored" code.  That on top of not knowing git
+The only major issue was that we committed broken "refactored" code.  That on top of not knowing git
 too well led us to having some headaches last minute.  Other issues that arose were minor and easy to
 fix, such as pushing symbols onto the stack in the wrong order, having multiple identical rules in our 
 grammar, and other really easy problems to fix.  
+
+Our final version handles everything as expected.  No known bugs were found in any of our test cases.
+
+------------------
+4. Test Case
+------------------
+Here, we used the Tiny Grammar that has operator precedence.  Here is our grammar file:
+
+%Non-terminals <Tiny-program> <statement-list> <statement> <id-list> <exp-list> <factor> <exp> <add-op> <mul-op> <mod-op> <mod-term> <mul-term>
+%Start <Tiny-program>
+%Rules
+<Tiny-program> : BEGIN <statement-list> END
+<statement-list> : <statement-list> <statement> | <statement>
+<statement> : PRINT LEFTPAR <exp-list> RIGHTPAR SEMICOLON
+<statement> : ID ASSIGN <exp> SEMICOLON
+<statement> : READ LEFTPAR <id-list> RIGHTPAR SEMICOLON
+<id-list> : <id-list> COMMA ID | ID
+<exp-list> : <exp-list> COMMA <exp> | <exp>
+<exp> :  <exp> <add-op> <mul-term> | <mul-term> 
+<mul-term> : <mul-term> <mul-op> <mod-term> | <mod-term>
+<mod-term> : <mod-term> <mod-op> <factor> | <factor>
+<factor> : LEFTPAR <exp> RIGHTPAR | INTNUM | ID
+<add-op> : PLUS | MINUS
+<mul-op> : MULTIPLY
+<mod-op> : MODULO
+
+Now, we go through and parse this grammar into a gramar Object, and remove all left recursion to get this as our modified grammar:
+
+TERMINAL SYMBOLS (15): BEGIN END SEMICOLON COMMA INTNUM PLUS MULTIPLY MODULO MINUS LEFTPAR RIGHTPAR PRINT ID ASSIGN READ 
+NONTERMINAL SYMBOLS (18): <Tiny-program> <statement-list> <statement> <id-list> <exp-list> <factor> <exp> <add-op> <mul-op> <mod-op> <mod-term> <mul-term> <statement-list>' <id-list>' <exp-list>' <exp>' <mod-term>' <mul-term>' 
+RULES: 
+<mod-term>' : <mod-op> <factor> <mod-term>' | .
+<exp-list> : <exp> <exp-list>' 
+<exp> : <mul-term> <exp>' 
+<mod-term> : LEFTPAR <exp> RIGHTPAR <mod-term>' | INTNUM <mod-term>' | ID <mod-term>' 
+<id-list> : ID <id-list>' 
+<add-op> : PLUS | MINUS 
+<exp>' : <add-op> <mul-term> <exp>' | . 
+<statement> : PRINT LEFTPAR <exp-list> RIGHTPAR SEMICOLON | ID ASSIGN <exp> SEMICOLON | READ LEFTPAR <id-list> RIGHTPAR SEMICOLON 
+<mod-op> : MODULO 
+<mul-term>' : <mul-op> <mod-term> <mul-term>' | . 
+<mul-op> : MULTIPLY 
+<Tiny-program> : BEGIN <statement-list> END 
+<id-list>' : COMMA ID <id-list>' | . 
+<statement-list> : <statement> <statement-list>' 
+<factor> : LEFTPAR <exp> RIGHTPAR | INTNUM | ID 
+<statement-list>' : <statement> <statement-list>' | . 
+<exp-list>' : COMMA <exp> <exp-list>' | . 
+<mul-term> : LEFTPAR <exp> RIGHTPAR <mod-term>' <mul-term>' | INTNUM <mod-term>' <mul-term>' | ID <mod-term>' <mul-term>' 
+
+Now that we have no left recursion on our grammar, time to create our parse table, which will look like this:
+(Note, since our program can take in this file as input, we needed to make it easy to parse through.  The way
+table entries are read is <Nonterminal>, <terminal>, action.  That is, in the cell of the table with row = Nonterminal
+and column = terminal contains action.  If the action is null, the cell will not show up here.)
+
+%Terminals
+BEGIN, END, SEMICOLON, COMMA, INTNUM, PLUS, MULTIPLY, MODULO, MINUS, LEFTPAR, RIGHTPAR, PRINT, ID, ASSIGN, READ
+%NonTerminals
+<Tiny-program>, <statement-list>, <statement>, <id-list>, <exp-list>, <factor>, <exp>, <add-op>, <mul-op>, <mod-op>, <mod-term>, <mul-term>, <statement-list>', <id-list>', <exp-list>', <exp>', <mod-term>', <mul-term>'
+%Start State
+<Tiny-program>
+%Table Entries
+<mod-term>', MODULO, <mod-term>' : <mod-term>' : <mod-op> <factor> <mod-term>'
+<mod-term>', COMMA, <mod-term>' : <mod-term>' : .
+<mod-term>', MINUS, <mod-term>' : <mod-term>' : .
+<mod-term>', MULTIPLY, <mod-term>' : <mod-term>' : .
+<mod-term>', PLUS, <mod-term>' : <mod-term>' : .
+<mod-term>', RIGHTPAR, <mod-term>' : <mod-term>' : .
+<mod-term>', SEMICOLON, <mod-term>' : <mod-term>' : .
+<exp-list>, ID, <exp-list> : <exp-list> : <exp> <exp-list>'
+<exp-list>, INTNUM, <exp-list> : <exp-list> : <exp> <exp-list>'
+<exp-list>, LEFTPAR, <exp-list> : <exp-list> : <exp> <exp-list>'
+<exp>, ID, <exp> : <exp> : <mul-term> <exp>'
+<exp>, INTNUM, <exp> : <exp> : <mul-term> <exp>'
+<exp>, LEFTPAR, <exp> : <exp> : <mul-term> <exp>'
+<mod-term>, LEFTPAR, <mod-term> : <mod-term> : LEFTPAR <exp> RIGHTPAR <mod-term>'
+<mod-term>, INTNUM, <mod-term> : <mod-term> : INTNUM <mod-term>'
+<mod-term>, ID, <mod-term> : <mod-term> : ID <mod-term>'
+<id-list>, ID, <id-list> : <id-list> : ID <id-list>'
+<add-op>, PLUS, <add-op> : <add-op> : PLUS
+<add-op>, MINUS, <add-op> : <add-op> : MINUS
+<exp>', MINUS, <exp>' : <exp>' : <add-op> <mul-term> <exp>'
+<exp>', PLUS, <exp>' : <exp>' : <add-op> <mul-term> <exp>'
+<exp>', COMMA, <exp>' : <exp>' : .
+<exp>', RIGHTPAR, <exp>' : <exp>' : .
+<exp>', SEMICOLON, <exp>' : <exp>' : .
+<statement>, PRINT, <statement> : <statement> : PRINT LEFTPAR <exp-list> RIGHTPAR SEMICOLON
+<statement>, ID, <statement> : <statement> : ID ASSIGN <exp> SEMICOLON
+<statement>, READ, <statement> : <statement> : READ LEFTPAR <id-list> RIGHTPAR SEMICOLON
+<mod-op>, MODULO, <mod-op> : <mod-op> : MODULO
+<mul-term>', MULTIPLY, <mul-term>' : <mul-term>' : <mul-op> <mod-term> <mul-term>'
+<mul-term>', COMMA, <mul-term>' : <mul-term>' : .
+<mul-term>', MINUS, <mul-term>' : <mul-term>' : .
+<mul-term>', PLUS, <mul-term>' : <mul-term>' : .
+<mul-term>', RIGHTPAR, <mul-term>' : <mul-term>' : .
+<mul-term>', SEMICOLON, <mul-term>' : <mul-term>' : .
+<mul-op>, MULTIPLY, <mul-op> : <mul-op> : MULTIPLY
+<Tiny-program>, BEGIN, <Tiny-program> : <Tiny-program> : BEGIN <statement-list> END
+<id-list>', COMMA, <id-list>' : <id-list>' : COMMA ID <id-list>'
+<id-list>', RIGHTPAR, <id-list>' : <id-list>' : .
+<statement-list>, ID, <statement-list> : <statement-list> : <statement> <statement-list>'
+<statement-list>, PRINT, <statement-list> : <statement-list> : <statement> <statement-list>'
+<statement-list>, READ, <statement-list> : <statement-list> : <statement> <statement-list>'
+<factor>, LEFTPAR, <factor> : <factor> : LEFTPAR <exp> RIGHTPAR
+<factor>, INTNUM, <factor> : <factor> : INTNUM
+<factor>, ID, <factor> : <factor> : ID
+<statement-list>', ID, <statement-list>' : <statement-list>' : <statement> <statement-list>'
+<statement-list>', PRINT, <statement-list>' : <statement-list>' : <statement> <statement-list>'
+<statement-list>', READ, <statement-list>' : <statement-list>' : <statement> <statement-list>'
+<statement-list>', END, <statement-list>' : <statement-list>' : .
+<exp-list>', COMMA, <exp-list>' : <exp-list>' : COMMA <exp> <exp-list>'
+<exp-list>', RIGHTPAR, <exp-list>' : <exp-list>' : .
+<mul-term>, LEFTPAR, <mul-term> : <mul-term> : LEFTPAR <exp> RIGHTPAR <mod-term>' <mul-term>'
+<mul-term>, INTNUM, <mul-term> : <mul-term> : INTNUM <mod-term>' <mul-term>'
+<mul-term>, ID, <mul-term> : <mul-term> : ID <mod-term>' <mul-term>'
+
+Now, comes the fun of parsing through an input with this parse table.  Our program only outputs
+whether it was sucessful or, if it failed, how far along it is in the program and the symbol it 
+failed it.  Here is what the program does step by step via debug mode through the input 
+"BEGIN ID ASSIGN INTNUM PLUS ID SEMICOLON END".
+
+"parsingStack.toString()"= "[$, <Tiny-program>]" (id=63)	
+"inputQueue.toString()"= "[BEGIN, ID, ASSIGN, INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=73)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>, BEGIN]" (id=818)	
+"inputQueue.toString()"= "[BEGIN, ID, ASSIGN, INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=819)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>]" (id=820)	
+"inputQueue.toString()"= "[ID, ASSIGN, INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=821)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, <statement>]" (id=822)	
+"inputQueue.toString()"= "[ID, ASSIGN, INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=823)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>, ASSIGN, ID]" (id=824)	
+"inputQueue.toString()"= "[ID, ASSIGN, INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=825)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>, ASSIGN]" (id=826)	
+"inputQueue.toString()"= "[ASSIGN, INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=827)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>]" (id=828)	
+"inputQueue.toString()"= "[INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=829)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>]" (id=830)	
+"inputQueue.toString()"= "[INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=831)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>Prime, <mod-term>Prime, INTNUM]" (id=832)	
+"inputQueue.toString()"= "[INTNUM, PLUS, ID, SEMICOLON, END, $]" (id=833)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>Prime, <mod-term>Prime]" (id=834)	
+"inputQueue.toString()"= "[PLUS, ID, SEMICOLON, END, $]" (id=835)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>Prime, .]" (id=836)	
+"inputQueue.toString()"= "[PLUS, ID, SEMICOLON, END, $]" (id=837)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>Prime]" (id=838)	
+"inputQueue.toString()"= "[PLUS, ID, SEMICOLON, END, $]" (id=839)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, .]" (id=840)	
+"inputQueue.toString()"= "[PLUS, ID, SEMICOLON, END, $]" (id=841)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime]" (id=842)	
+"inputQueue.toString()"= "[PLUS, ID, SEMICOLON, END, $]" (id=843)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>, <add-op>]" (id=844)	
+"inputQueue.toString()"= "[PLUS, ID, SEMICOLON, END, $]" (id=845)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>, PLUS]" (id=846)	
+"inputQueue.toString()"= "[PLUS, ID, SEMICOLON, END, $]" (id=847)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>]" (id=848)	
+"inputQueue.toString()"= "[ID, SEMICOLON, END, $]" (id=849)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>Prime, <mod-term>Prime, ID]" (id=850)	
+"inputQueue.toString()"= "[ID, SEMICOLON, END, $]" (id=851)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>Prime, <mod-term>Prime]" (id=852)	
+"inputQueue.toString()"= "[SEMICOLON, END, $]" (id=853)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>Prime, .]" (id=854)	
+"inputQueue.toString()"= "[SEMICOLON, END, $]" (id=855)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, <mul-term>Prime]" (id=856)	
+"inputQueue.toString()"= "[SEMICOLON, END, $]" (id=857)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime, .]" (id=858)	
+"inputQueue.toString()"= "[SEMICOLON, END, $]" (id=859)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, <exp>Prime]" (id=860)	
+"inputQueue.toString()"= "[SEMICOLON, END, $]" (id=861)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON, .]" (id=862)	
+"inputQueue.toString()"= "[SEMICOLON, END, $]" (id=863)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime, SEMICOLON]" (id=864)	
+"inputQueue.toString()"= "[SEMICOLON, END, $]" (id=865)	
+
+"parsingStack.toString()"= "[$, END, <statement-list>Prime]" (id=866)	
+"inputQueue.toString()"= "[END, $]" (id=867)	
+
+"parsingStack.toString()"= "[$, END, .]" (id=868)	
+"inputQueue.toString()"= "[END, $]" (id=869)	
+
+"parsingStack.toString()"= "[$, END]" (id=870)	
+"inputQueue.toString()"= "[END, $]" (id=871)	
+
+"parsingStack.toString()"= "[$]" (id=872)	
+"inputQueue.toString()"= "[$]" (id=873)	
+
+Since both the parsing stack and the inputQueue have $ as their next item, this was a valid syntax.
+If we are unable to find an entry for the parse table or if we find that at the end, either the stack
+or the queue is not at the $, we throw an exception, which will tell us how much has been parsed
+properly, and on which symbol it has failed on.  For example, on the input "BEGIN ID ASSIGN INTNUM END"
+we get an error, here is the trace:
+
+com.cs3240.parsergenerator.exceptions.InvalidSyntaxException: Invalid syntax on END
+Current Sentence: BEGIN ID ASSIGN INTNUM 
+	at com.cs3240.parsergenerator.utils.Driver.parse(Driver.java:67)
+	at com.cs3240.parsergenerator.Domain.SuperTest.testEverything2(SuperTest.java:55)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:44)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:41)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:20)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:76)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:193)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:52)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:191)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:42)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:184)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:236)
+	at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:46)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:467)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:683)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:390)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:197)
+
+This is where the error should have been thrown since we need a semicolon to appear before end does.
+

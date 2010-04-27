@@ -152,7 +152,7 @@ public class Grammar {
                 List<Rule> rulesToRemove = new ArrayList<Rule>();
                 List<Rule> rulesToAdd = new ArrayList<Rule>();
                 for (Rule rule : rulesForAi) {
-                    if (rule.get(0).equals(aj)) {
+                    if (rule.startsWith(aj)) {
                         rulesToRemove.add(rule);
                         for (Rule ruleJ : rulesForAj) {
                             Rule ruleClone = null;
@@ -214,7 +214,7 @@ public class Grammar {
                     isChanging = true;
                 }
                 for (Rule rule : rulesForNonTerm) {
-                    if (rule.get(0).equals(maxAlpha)) {
+                    if (rule.startsWith(maxAlpha)) {
                         rulesToRemove.add(rule);
                         List<Symbol> newRule = new ArrayList<Symbol>();
                         NonterminalSymbol newSymbol = new NonterminalSymbol(maxAlpha.getName() + "FACTOR");
@@ -287,7 +287,7 @@ public class Grammar {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            if (ruleClone.get(0).equals(ai)) {
+            if (ruleClone.startsWith(ai)) {
                 rulesToRemove.add(rule);
                 ruleClone.remove(0);
                 ruleClone.add(newSymbol);

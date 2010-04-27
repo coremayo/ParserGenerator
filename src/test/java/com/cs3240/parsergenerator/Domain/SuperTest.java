@@ -24,7 +24,7 @@ public class SuperTest {
 
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd-Hmmss");
 
-    @Test(expected=InvalidSyntaxException.class)
+    @Test
 	public void testEverything2() throws IOException, InvalidSyntaxException {
 		Grammar grammar = GrammarFileParser.parse("TinyGrammar.txt");
 		grammar.removeLeftRecursion();

@@ -48,6 +48,11 @@ public class Main {
     		aliases="--scan")
     private File tinyProgramFile;
     
+    @Option(name="-so",
+    	usage="File to output tokenized tiny program to",
+    		aliases="--scannedOutput")
+    private String tinyTokenName;
+    
     public static void main(String[] args)
     throws IOException, InvalidSyntaxException {
 
@@ -78,8 +83,7 @@ public class Main {
         			}
             	}
             	try {
-
-                    File file= new File(m.tinyProgramFile.getParent() + m.tinyProgramFile.getName() + "-tokenized.txt");
+                    File file= new File(m.tinyTokenName);
                     FileWriter outFile = new FileWriter(file);
                     PrintWriter out = new PrintWriter(outFile);
 

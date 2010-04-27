@@ -27,8 +27,8 @@ public class Main {
 
     @Option(name="-i",
             usage="File containing input to check against the supplied grammar." +
-                    "If this is not supplied, then the parse table is written out to " +
-                    "the specified filename.",
+                  "If this is not supplied, then the parse table is written out to " +
+                  "the specified filename.",
             aliases={"--input"})
     private File inputFile;
 
@@ -40,17 +40,17 @@ public class Main {
     
     @Option(name="-pt",
     		usage="File containing a parseTable to check input against, cannot be using with grammar file input",
-    		aliases="--parseTable")
+    		aliases={"--parseTable"})
     private File parseTableFile;
     
     @Option(name="-s",
-    	usage="Takes in a tiny program file, and outputs tokens to a file called <filename>-tokenized.txt",
-    		aliases="--scan")
+        	usage="Takes in a tiny program file, and outputs tokens to a file called <filename>-tokenized.txt",
+		    aliases={"--scan"})
     private File tinyProgramFile;
     
     @Option(name="-so",
-    	usage="File to output tokenized tiny program to",
-    		aliases="--scannedOutput")
+    	    usage="File to output tokenized tiny program to",
+		    aliases={"--scannedOutput"})
     private String tinyTokenName;
     
     public static void main(String[] args)

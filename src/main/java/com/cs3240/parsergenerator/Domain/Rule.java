@@ -62,6 +62,7 @@ public class Rule implements Comparable<Rule>, Cloneable {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+        builder.append(lhs + " : ");
         ListIterator<Symbol> it = theRule.listIterator();
         while (it.hasNext()) {
             builder.append(it.next());
@@ -115,5 +116,12 @@ public class Rule implements Comparable<Rule>, Cloneable {
         rule.setRule(new ArrayList<Symbol>(theRule));
 
         return rule;
+    }
+
+    public boolean startsWith(Symbol s) {
+        if (theRule.isEmpty()) {
+            return false;
+        }
+        return theRule.get(0).equals(s);
     }
 }

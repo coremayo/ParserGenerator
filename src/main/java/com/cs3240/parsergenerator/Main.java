@@ -93,10 +93,9 @@ public class Main {
               } catch (IOException e) {
                 throw new CmdLineException(parser, "Bad filename for tinyProgram file");
               }
+              System.out.println("Successfully tokenized file.");
+              System.exit(0);
               
-              if (m.inputFile == null) {
-            	  m.inputFile = new File(m.tinyProgramFile.getParent() + m.tinyProgramFile.getName() + "-tokenized.txt");
-              }
             }
 
             if (m.inputFile == null && m.outputFilename == null && m.parseTableFile == null) {

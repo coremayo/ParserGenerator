@@ -188,7 +188,7 @@ public class Grammar {
             isChanging = false;
             for (NonterminalSymbol nonTermSymbol : new ArrayList<NonterminalSymbol>(nonterminalSymbols)) {
                 List<Rule> rulesForNonTerm = rulesMap.get(nonTermSymbol);
-                Map<NonterminalSymbol, Integer> alphaCounts = new HashMap<NonterminalSymbol, Integer>();
+                Map<Symbol, Integer> alphaCounts = new HashMap<Symbol, Integer>();
                 List<Rule> rulesToRemove = new ArrayList<Rule>();
                 List<Rule> rulesToAdd = new ArrayList<Rule>();
                 Map<NonterminalSymbol, List<Rule>> newRulesForNewSymbols = new HashMap<NonterminalSymbol, List<Rule>>();
@@ -196,18 +196,18 @@ public class Grammar {
                 	if (rule.get(0) instanceof TerminalSymbol) {
                 		continue;
                 	}
-                    NonterminalSymbol first = (NonterminalSymbol) rule.get(0);
+                    Symbol first = rule.get(0);
                     if (alphaCounts.get(first) == null) {
                         alphaCounts.put(first, 1);
                         continue;
                     }
                     alphaCounts.put(first, alphaCounts.get(first) + 1);
                 }
-                NonterminalSymbol maxAlpha = null;
+                Symbol maxAlpha = null;
                 int maxCount = 0;
                 for (Symbol s : alphaCounts.keySet()) {
-                    if (s instanceof NonterminalSymbol && alphaCounts.get(s) > maxCount) {
-                        maxAlpha = (NonterminalSymbol) s;
+                    if (alphaCounts.get(s) > maxCount) {
+                        maxAlpha = s;
                         maxCount = alphaCounts.get(s);
                     }
                 }

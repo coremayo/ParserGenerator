@@ -20,11 +20,16 @@ for output.
 
 Next, we split the work in the parser generator. After building the shell classes for 
 entities such as Grammar, Symbol, and Rule, Corey worked on the code to build parse tables,
-including building the first and follow sets, while Bobby and Andy developed the Grammar
+including building the first and follow sets. Bobby and Andy developed the Grammar
 methods to remove left recursion and handle left-factoring, using the algorithms described
-in the Louden text.
+in the Louden text.  They also wrote the driver that uses the Parse Table and the input 
+received from the the lexical anaylis to check for valid syntax, using the LL(1) algorithm from
+the Louden Book.
 
-Finally, we combined [...]
+Many test cases were written to thouroughly test that grammars were getting properly parsed, 
+parse tables were properly generated, and so on with various grammars from the Louden Book
+as well as from the example grammars given to us.  Then, when we combined everything together,
+it was succesfully telling us whether or not the input was valid in the grammar.
 
 Also, we created a custom exception, InvalidSyntaxException, to throw on two occasions:
 	1. When the parser reads in input and no ParseAction (rule) exists in the ParseTable for
@@ -32,5 +37,19 @@ Also, we created a custom exception, InvalidSyntaxException, to throw on two occ
 	2. When the parser has finished, but finds that either the parsing stack or	input contains
 		further symbols (both are not $ at the end).
 
+------------------
+2. Assumptions
+------------------
+1.  We assumed that no inputted grammar would have any indirect left recursion.
+2.  We assumed that for the tiny language for the lexical analysis, there were 
+  spaces between every token except for the semicolon, which would immediately 
+  follow a token.
+3.  We assumed that any file that is being put in would be a valid LL(1) grammar.
 
-
+------------------
+3. Problems/Bugs
+------------------
+The first major issue was that we committed broken "refactored" code.  That on top of not knowing git
+too well led us to having some headaches last minute.  Other issues that arose were minor and easy to
+fix, such as pushing symbols onto the stack in the wrong order, having multiple identical rules in our 
+grammar, and other really easy problems to fix.  

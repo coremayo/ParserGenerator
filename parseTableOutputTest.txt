@@ -5,21 +5,21 @@ exp, exp', addop, term, term', mulop, factor
 %Start State
 exp
 %Table Entries
-exp, LEFTPAR, exp : term exp'
-exp, NUMBER, exp : term exp'
-exp', RIGHTPAR, exp' : .
-exp', PLUS, exp' : addop term exp'
-exp', MINUS, exp' : addop term exp'
-exp', $, exp' : .
-addop, PLUS, addop : PLUS
-addop, MINUS, addop : MINUS
-term, LEFTPAR, term : factor term'
-term, NUMBER, term : factor term'
-term', RIGHTPAR, term' : .
-term', PLUS, term' : .
-term', MINUS, term' : .
-term', MULT, term' : mulop factor term'
-term', $, term' : .
-mulop, MULT, mulop : MULT
-factor, LEFTPAR, factor : LEFTPAR exp RIGHTPAR
-factor, NUMBER, factor : NUMBER
+exp, LEFTPAR, exp : exp : term exp'
+exp, NUMBER, exp : exp : term exp'
+exp', RIGHTPAR, exp' : exp' : .
+exp', PLUS, exp' : exp' : addop term exp'
+exp', MINUS, exp' : exp' : addop term exp'
+exp', $, exp' : exp' : .
+addop, PLUS, addop : addop : PLUS
+addop, MINUS, addop : addop : MINUS
+term, LEFTPAR, term : term : factor term'
+term, NUMBER, term : term : factor term'
+term', RIGHTPAR, term' : term' : .
+term', PLUS, term' : term' : .
+term', MINUS, term' : term' : .
+term', MULT, term' : term' : mulop factor term'
+term', $, term' : term' : .
+mulop, MULT, mulop : mulop : MULT
+factor, LEFTPAR, factor : factor : LEFTPAR exp RIGHTPAR
+factor, NUMBER, factor : factor : NUMBER

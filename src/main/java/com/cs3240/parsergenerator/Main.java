@@ -11,7 +11,6 @@ import org.kohsuke.args4j.Option;
 
 import com.cs3240.parsergenerator.Domain.Grammar;
 import com.cs3240.parsergenerator.Domain.ParseTable;
-import com.cs3240.parsergenerator.exceptions.GrammarFileParseException;
 import com.cs3240.parsergenerator.exceptions.InvalidSyntaxException;
 import com.cs3240.parsergenerator.utils.Driver;
 import com.cs3240.parsergenerator.utils.ParseTableGenerator;
@@ -19,7 +18,6 @@ import com.cs3240.parsergenerator.utils.ParseTableGenerator;
 public class Main {
 
     @Option(name="-g",
-            required=true,
             usage="File containing grammar specification",
             aliases={"--grammar"})
     private File grammarFile;
@@ -36,9 +34,15 @@ public class Main {
             aliases={"--output"},
             metaVar="FILE")
     private String outputFilename;
-
+    
+    @Option(name="-pt",
+    		usage="File containing a parseTable to check input against, cannot be using with grammar file input",
+    		aliases="--parseTable")
+    private File parseTableFile;
+    
     public static void main(String[] args)
-    throws IOException, InvalidSyntaxException, GrammarFileParseException {
+    throws IOException, InvalidSyntaxException {
+
 
         Main m = new Main();
         CmdLineParser parser = new CmdLineParser(m);
@@ -46,8 +50,23 @@ public class Main {
         try {
             parser.parseArgument(args);
 
-            if (m.inputFile == null) {
+            if (m.inputFile == null && m.outputFilename == null && m.parseTableFile == null) {
                 String message = "The -o parameter must be used when the -i parameter is absent.";
+                throw new CmdLineException(parser, message);
+            }
+            
+            if (m.grammarFile != null && m.parseTableFile != null) {
+            	String message = "The -g parameter and the -pt cannot be used at the same time.";
+                throw new CmdLineException(parser, message);
+            }
+            
+            if (m.grammarFile == null && m.parseTableFile == null) {
+            	String message = "You must use either the -g parameter or the -pt parameter.";
+                throw new CmdLineException(parser, message); 
+            }
+            
+            if (m.parseTableFile != null && m.inputFile == null) {
+            	String message = "You must use the -i parameter to use the -pt parameter.";
                 throw new CmdLineException(parser, message);
             }
 
@@ -57,10 +76,14 @@ public class Main {
             System.exit(1);
         }
 
-        Grammar grammar = GrammarFileParser.parse(m.grammarFile);
-        grammar.removeLeftRecursion();
-
-        ParseTable pt = ParseTableGenerator.generateTable(grammar);
+        ParseTable pt = null;
+        if (m.grammarFile != null) {
+        	Grammar grammar = GrammarFileParser.parse(m.grammarFile);
+        	grammar.removeLeftRecursion();
+        	pt = ParseTableGenerator.generateTable(grammar);        	
+        } else {
+        	pt = Driver.getTableFromFile(m.parseTableFile);
+        }
 
         if (m.inputFile == null) {
             Driver.outputTableToFile(pt, m.outputFilename);
@@ -73,7 +96,9 @@ public class Main {
             }
 
             String input = sb.toString();
-            Driver.parse(pt, input);
+            if (Driver.parse(pt, input)) {
+            	System.out.println("Your input is valid with the grammar");
+            }
         }
     }
 }

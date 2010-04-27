@@ -35,5 +35,6 @@ The following combinations of parameters are valid:
   -g and -o
   -g, -s, and -so
   -pt and -i
-  -pt, -g, and -so
+  -pt, -g, -s, and -so
+  -s, -so
 

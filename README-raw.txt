@@ -6,19 +6,15 @@ James King
 Corey Mayo
 
 Prerequisites:
-This program requires the Sun Java runtime environment to be installed. It 
-should run and compile on either windows or linux.
+This program requires the Sun Java runtime environment to be installed. It should run and compile on either windows or linux.
 
 To Compile:
-From the command line navigate to the project folder and type: 
-"apache-maven-2.2.1/bin/mvn install".
+From the command line navigate to the project folder and type: "apache-maven-2.2.1/bin/mvn install".
 If you are running windows, use backslashes in the path instead.
 A precompiled jar file is included if compilation problems occur.
 
 To Run:
-Type "java -jar target/program.jar" from the project's root directory. This 
-will invoke the system's java command. When called without any parameters, the 
-program will print usage then exit.
+Type "java -jar target/program.jar" from the project's root directory. This will invoke the system's java command. When called without any parameters, the program will print usage then exit.
 Usage:
 -g (--grammar) FILE     : File containing grammar specification
 -i (--input) FILE       : File containing input to check against the supplied

@@ -48,7 +48,7 @@ public class Main {
         CmdLineParser parser = new CmdLineParser(m);
 
         try {
-            parser.parseArgument(args);
+            parser.parseArgument(args); 
 
             if (m.inputFile == null && m.outputFilename == null && m.parseTableFile == null) {
                 String message = "The -o parameter must be used when the -i parameter is absent.";

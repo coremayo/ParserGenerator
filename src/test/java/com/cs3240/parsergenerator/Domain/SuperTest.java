@@ -24,9 +24,8 @@ public class SuperTest {
 
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd-Hmmss");
 
-    @Test
+    @Test(expected=InvalidSyntaxException.class)
 	public void testEverything2() throws IOException, InvalidSyntaxException {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd-Hmmss");
 		Grammar grammar = GrammarFileParser.parse("TinyGrammar.txt");
 		grammar.removeLeftRecursion();
 		System.out.println(grammar);
@@ -53,10 +52,8 @@ public class SuperTest {
     	}
     	System.out.println(output.toString());
     	assertTrue(Driver.parse(pt, output.toString()));
-		
-		
-		
 	}
+  
     public void testEverything1() throws IOException, InvalidSyntaxException {
 
         Grammar grammar = GrammarFileParser.parse(new File("GrammarSample.txt"));
